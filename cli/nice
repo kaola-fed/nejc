@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+'use strict';
+
+var pkg = require('../package.json');
+var App = (process.env.NODE_ENV === 'development') ? require('../src/') : require('../dist/');
+var path = require('path');
+var argTest = require('./argTest');
+
+var argv = require('yargs')
+    .usage('Usage: nice [options]')
+
+    .alias('c', 'config')
+    .describe('c', '配置文件')
+    .default('c', 'nice.config.js')
+
+    .alias('s', 'src')
+    .describe('s', 'source code')
+    .default('s', 'src')
+
+    .alias('e', 'ext')
+    .describe('e', 'ext files')
+    .default('e', '.js')
+
+
+    .alias('d', 'dist')
+    .describe('d', 'dist code')
+    .default('d', 'dist')
+
+    .alias('if', 'ignoreFiles')
+    .describe('if', 'ignored files')
+    .default('if', '')
+
+    .alias('ie', 'ignoreExt')
+    .describe('ie', 'ignored ext')
+    .default('ie', '')
+
+    .alias('v', 'version')
+    .describe('v', 'Show version')
+    .version(() => pkg.version)
+
+    .help('h')
+    .alias('h', 'help')
+
+    .example('nice -s src -d dist -if ignore.js -ie .es6,.html')
+    .argv;
+
+var src = argv.s,
+    config = argv.c,
+    dist = argv.d,
+    ignoreFiles = argv.ignoreFiles.split(','),
+    ignoreExt = argv.ignoreExt.split(','),
+    ext = argv.ext.split(',');
+
+
+var configOption;
+
+try {
+    configOption = require(path.resolve(process.cwd(), config));
+} catch (e) {
+    configOption = {
+        src, dist,
+        ignoreFiles, ignoreExt
+    }
+}
+var res = argTest(configOption);
+
+if (res) {
+    throw new Error(res.key + ' 字段，需要传入' + res.value);
+    return -1;
+}
+App(configOption);
