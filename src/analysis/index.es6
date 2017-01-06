@@ -6,12 +6,11 @@ export default class Analysis {
     }
 
     analysis(source) {
-        let map;
-        let compiler;
+        let map,
+            compiler;
+
         try {
-            /**
-             * Compiler Function
-             */
+
             compiler = this.createCompileFunction(source);
 
         } catch (err) {
@@ -19,11 +18,12 @@ export default class Analysis {
             return -1;
         }
 
-        try{
+        try {
+
             map = compiler(NEJParser, this.alias);
-        }catch (err){
-            // console.log(`${this.file}文件转换 Commonjs 异常，输出源码`);
-            console.log(err)
+
+        } catch (err) {
+            console.log(err);
             return -1;
         }
 

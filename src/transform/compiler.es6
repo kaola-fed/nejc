@@ -2,27 +2,33 @@ import HasReturnStatement from './hasReturnStatement';
 
 class Compiler {
     constructor(input, ap) {
-        this.input = input;
         this.ap = ap;
-        this.updateFunctionWrapper();
+        this.result = input;
     }
 
-    updateFunctionWrapper() {
-        this.result =
-            this.input
-                .replace(/^\s*function\s*\([^)]*\)\s*\{/, 'function moduleExports () {');
+    compile() {
+        this
+            .reduceWrapFunction()
+            .reduceReturnStatement();
 
-        const hasReturnStatement =  new HasReturnStatement(this.result).compile();
+        return this.result;
+    }
+
+    reduceWrapFunction() {
+        this.result = this.result.replace(/^\s*function\s*\([^)]*\)\s*\{/, 'function moduleExports () {');
+        return this;
+    }
+
+    reduceReturnStatement() {
+        const hasReturnStatement = new HasReturnStatement(this.result).compile();
 
         if (this.ap && !hasReturnStatement) {
             this.result = this.result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
         }
 
         this.result = this.result + '\n\nmodule.exports = moduleExports()\n';
-    }
 
-    compile() {
-        return this.result;
+        return this;
     }
 }
 

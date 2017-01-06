@@ -1,5 +1,6 @@
 import Analysis from './analysis';
 import Transform from './transform';
+import Source from './source';
 import through2 from 'through2';
 import gulpUtil from 'gulp-util';
 import replaceExt from 'replace-ext';
@@ -16,7 +17,6 @@ class App {
 
         let keys = Object.keys(opt.alias);
 
-        this.alias = [];
         this.alias = keys.map(key => {
             return {
                 key,
@@ -29,7 +29,7 @@ class App {
         });
     }
 
-    entry(opt) {
+    entry() {
         return through2.obj((file, enc, cb) => {
             if (file.isNull())
                 return cb(null, file);
@@ -43,6 +43,9 @@ class App {
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
 
+            /**
+             * 测试代码直接复制
+             */
             if (~file.path.indexOf('test')) {
                 return cb(null, file);
             }
@@ -51,28 +54,22 @@ class App {
                 return cb(null, file);
             }
 
-            if (-1 === sourceContent.indexOf('define(')) {
+            if (!~sourceContent.indexOf('define(')) {
                 return cb(null, file);
             }
 
             try {
-                this.getCommentState(sourceContent, file);
-                let reg = /([\s\S]*?)((NEJ\.define)|(define))/g;
-                let matched;
-                const startIndex = (() => {
-                    while (matched = reg.exec(sourceContent)) {
-                        if (this.notInComment(matched.index + matched[1].length, matched[2].length)) {
-                            return matched.index + matched[1].length;
-                        }
-                    }
-                })();
-                let firstCode = sourceContent.substr(0, startIndex);
-                let matchedStr = sourceContent.substr(startIndex);
+                const {
+                    firstCode,
+                    matchedStr
+                } = new Source().source(sourceContent);
 
                 const map = new Analysis(options).analysis(matchedStr);
-                if (map === -1) {
+
+                if (-1 === map) {
                     return cb(null, file);
                 }
+
                 const content = new Transform(options).transform(map);
 
                 file.contents = new Buffer([firstCode, content].join(''));
@@ -80,47 +77,11 @@ class App {
 
                 cb(null, file);
             } catch (err) {
-                cb(new PluginError('gulp_mcss', err));
+                cb(new PluginError('nice', err));
             }
         });
     }
 
-    getCommentState(input, file) {
-        let commentState = this.commentState = [];
-        let matched;
-        let reg = /(\/\/)|(\/\*)|(\*\/)/g;
-
-        while (matched = reg.exec(input)) {
-
-            if (matched[1]) {
-                let idx = matched.index;
-                while (input[++idx] && input[idx] !== '\n') {}
-                commentState.push({
-                    start: matched.index,
-                    end: idx
-                });
-            } else if (matched[2]) {
-                /**
-                 *
-                 * @type {number}
-                 */
-                try {
-                    let closeCommentIdx = matched.index + /\*\//g.exec(input.substr(matched.index)).index;
-                    commentState.push({
-                        start: matched.index,
-                        end: closeCommentIdx + 2
-                    });
-                } catch (err) {
-                }
-            }
-        }
-    }
-
-    notInComment(idx, len) {
-        return !this.commentState.some(item => {
-            return (item.start < idx && item.end > idx + len);
-        });
-    }
 }
 
 export default App;

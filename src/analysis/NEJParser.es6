@@ -1,21 +1,9 @@
 import path from 'path';
-let currentFile;
-let result;
 const _g = global;
-const __config = {root: {}};
-const __initialRoot = {
-    platform: './platform/'
-};
 
 const _isTypeOf = function (_data, _type) {
     return Object.prototype.toString.call(_data) === '[object ' + _type + ']';
 };
-
-
-const _getResult = function () {
-    return result;
-};
-
 
 /*
  * 解析插件信息
@@ -142,58 +130,6 @@ const _doFormatURI = (function () {
     };
 })();
 
-
-const NEJ = {};
-/**
- * nej define
- * @param _uri
- * @param _deps
- * @param _callback
- * @returns {*}
- */
-// NEJ.define = function (_uri, _deps, _callback) {
-//     if (_isTypeOf(_uri, 'String'))
-//         return _doDefine.apply(_g, arguments);
-//     const _args = [].slice.call(arguments, 0);
-//     return _doDefine.apply(_g, _args);
-// };
-// /**
-//  * @description 格式化 url
-//  * 1. {lib}
-//  * 2. {platform}
-//  * 3. ./xxx
-//  */
-// NEJ.doFormatURI = _doFormatURI;
-//
-// /**
-//  * 格式化参数
-//  * @type {_doFormatARG}
-//  */
-// NEJ.doFormatARG = _doFormatARG;
-//
-// /**
-//  * 分析插件
-//  */
-// NEJ.doParsePlugin = _doParsePlugin;
-//
-// /**
-//  * 设置别名
-//  * @type {_setAlias}
-//  */
-// NEJ.setAlias = _setAlias;
-//
-// /**
-//  * 获取当前文件
-//  * @type {_setCurrentFile}
-//  */
-// NEJ.setCurrentFile = _setCurrentFile;
-//
-// /**
-//  * 获取结果
-//  * @type {_getResult}
-//  */
-// NEJ.getResult = _getResult;
-
 class NEJParser {
     constructor({alias = [], uri = ''}) {
         this._config = {
@@ -218,7 +154,9 @@ class NEJParser {
 
     _setAlias(alias) {
         const __config = this._config;
-        __config.root = Object.assign(__initialRoot);
+        __config.root = {
+            platform: './platform/'
+        };
         alias.forEach(item => {
             Object.assign(__config.root, {
                 [item.key]: item.value
