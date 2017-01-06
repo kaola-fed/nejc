@@ -1,9 +1,10 @@
 import path from 'path';
+import {readFileSync} from 'fs';
 import {js_beautify} from 'js-beautify';
 import Compiler from './compiler';
 import ejs from 'ejs';
 const jsBeatify = str => js_beautify(str, {indent_size: 4});
-const template = `<%depMap.forEach(function(item){%>let <%- item.name %> = <% if( typeof item.uri === 'string'){ %>require('<%- item.uri  %>')<%}else {%><%= item.uri() %><%}%>;
+const template = `<%depMap.forEach(function(item){%>var <%- item.name %> = <% if( typeof item.uri === 'string'){ %>require('<%- item.uri  %>')<%}else {%><%= item.uri() %><%}%>;
 <%})%>
 <%- fn %>;`;
 
@@ -19,29 +20,26 @@ export default class Transform {
             return '';
         }
 
-        let deps = map.d || [],
-            fn = map.f,
-            nowFile = map.n,
-            parent = path.parse(nowFile).dir;
+        const deps = map.d || [];
+        const functionBody = map.f;
+        const args = Transform.getArgs(functionBody);
+        const autoReturnArg = args[deps.length];
 
-        const args = Transform.getArgs(fn);
-        const _ap = args[deps.length];
-
-        fn = jsBeatify(new Compiler(fn, _ap).compile());
-
-        deps = this.handleDeps(deps, parent);
+        const parent = path.parse(map.n).dir;
+        const body = jsBeatify(new Compiler(functionBody, autoReturnArg).compile());
+        const importDeps = this.reduceDeps(deps, parent);
 
         const depMap = args.map((item, idx) => {
             return {
                 name: item,
-                uri: deps[idx] || function () {
+                uri: importDeps[idx] || function () {
                     return "{}"
                 }
             }
         });
 
         return ejs.render(template, {
-            depMap, fn
+            depMap, fn: body
         });
     }
 
@@ -53,25 +51,12 @@ export default class Transform {
         }) : [];
     }
 
-    handleDeps(deps, parent) {
-
-        const _deps = deps.map((item) => {
-            const p = path.relative(parent, item);
-            if (!p.startsWith('..')) {
-                return p.startsWith('.') ? p : './' + p;
-            }
-            let alias = this.alias.filter(alias => {
-                return !!(~item.indexOf(alias.value));
-            })[0];
-
-            if (alias && alias.key) {
-                return item
-                    .replace(alias.value, alias.key + '/')
-                    .replace(/^\//g, '');
-            }
-
-            return p;
-        });
+    /**
+     * @param deps
+     * @param parent
+     * @returns {Array|*}
+     */
+    reduceDeps(deps, parent) {
 
         const _o = function () {
                 return '{}'
@@ -83,8 +68,29 @@ export default class Transform {
                 return 'function(){return !1;}'
             };
 
-        _deps.push(_o, _o, _f, _r);
+        const returnDeps = deps.map((item) => {
+            const p = path
+                .relative(parent, item)
+                .replace(/\.js$/ig,'');
 
-        return _deps;
+            if (!p.startsWith('..')) {
+                return p.startsWith('.') ? p : './' + p;
+            }
+
+            let alias = this.alias.filter(alias => {
+                return !!(~item.indexOf(alias.value));
+            })[0];
+
+            if (alias && alias.key) {
+                return item
+                    .replace(alias.value, alias.key + '/')
+                    .replace(/^\//g, '');
+            }
+            return p;
+        });
+
+        returnDeps.push(_o, _o, _f, _r);
+
+        return returnDeps;
     }
 }

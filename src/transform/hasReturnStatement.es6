@@ -1,6 +1,5 @@
 import jscodeshift from 'jscodeshift';
 
-
 class HasReturnStatement {
     constructor(input) {
         this.input = input;
@@ -10,19 +9,19 @@ class HasReturnStatement {
         let len = 0;
         jscodeshift(this.input)
             .find(jscodeshift.ReturnStatement)
-            .forEach(function (path) {
-                const root = path.parentPath
-                    .parentPath
-                    .parentPath
-                    .parentPath
-                    .parentPath
-                    .parentPath; //outer
-                if (root.name === null) {
-                    len++;
-                    return 1;
-                }
+            .forEach((path) => {
+                if (HasReturnStatement.getRoot(path).name === null) len++;
             });
         return len > 0;
+    }
+
+    static getRoot(path) {
+        return path.parentPath
+            .parentPath
+            .parentPath
+            .parentPath
+            .parentPath
+            .parentPath;
     }
 }
 

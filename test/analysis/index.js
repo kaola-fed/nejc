@@ -5,57 +5,23 @@ var filename = __filename;
 var cwd = __dirname;
 var path = require('path');
 
-var alias1 = [
+var alias = [
     {
         key: 'pro',
         value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/',
-    },{
-        key:'lib',
+    }, {
+        key: 'lib',
         value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/lib/nej/src/',
-    },{
+    }, {
         key: 'h5lib',
-        value: 'Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/'
-    },{
+        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/'
+    }, {
         key: 'fedlib',
-        value: 'Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/'
+        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/'
     }
 ];
 
-describe('_doFormatURI', function () {
-
-
-    it('分析入参1', function () {
-        var uri = '1.js';
-        var deps = [];
-        var temp = function () {
-        };
-        var res = new NEJParser({}).doFormatARG(uri, deps, temp);
-        expect(res[0]).to.be.equal(uri);
-        expect(res[1]).to.be.equal(deps);
-        expect(res[2]).to.be.equal(temp);
-    });
-
-    it('分析入参2', function () {
-        var uri = '1.js';
-        var deps = [];
-        var temp = function () {
-        };
-        var res = new NEJParser({}).doFormatARG(temp, uri, deps);
-        expect(res[0]).to.be.equal(uri);
-        expect(res[1]).to.be.equal(deps);
-        expect(res[2]).to.be.equal(temp);
-    });
-
-    it('分析入参3', function () {
-        var uri = '1.js';
-        var deps = [];
-        var temp = function () {
-        };
-        var res = new NEJParser({}).doFormatARG(deps, uri, temp);
-        expect(res[0]).to.be.equal(uri);
-        expect(res[1]).to.be.equal(deps);
-        expect(res[2]).to.be.equal(temp);
-    });
+describe('依赖路径分析', function () {
 
     it('相对路径', function () {
         var res = new NEJParser({}).doFormatURI('./index.js', filename);
@@ -100,31 +66,60 @@ describe('_doFormatURI', function () {
             ]
         });
         var res = nejParser.doParsePlugin('{platform}config.js');
-        var result = nejParser.doFormatURI(res[0], '', res[2]);
-        expect(result).to.be.equal(cwd + '/platform/config.js');
+        var result = nejParser.doFormatURI(res[0], path.join(cwd, 'index.js'), res[2]);
+        expect(result).to.be.equal(path.join(cwd, 'platform', 'config.js'));
     });
 
     it('变量', function () {
         var nejParser = new NEJParser({
-            alias: alias1
+            alias: alias
         });
         var res = nejParser.doParsePlugin('h5lib/helper/util');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal(cwd + '/lib/h5lib/helper/util.js');
+        expect(result).to.be.equal('/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/' + 'helper/util.js');
     });
 
     it('变量2', function () {
         var nejParser = new NEJParser({
-            alias: alias1
+            alias: alias
         });
         var res = nejParser.doParsePlugin('base/klass');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal(cwd + '/lib/base/klass.js');
+        expect(result).to.be.equal('/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/lib/nej/src/' + 'base/klass.js');
+    });
+});
+
+describe('传参分析', function () {
+    var uri = '1.js';
+    var deps = [];
+    var temp = function () {};
+
+    it('分析入参1', function () {
+        var res = new NEJParser({}).doFormatARG(uri, deps, temp);
+        expect(res[0]).to.be.equal(uri);
+        expect(res[1]).to.be.equal(deps);
+        expect(res[2]).to.be.equal(temp);
     });
 
+    it('分析入参2', function () {
+        var res = new NEJParser({}).doFormatARG(temp, uri, deps);
+        expect(res[0]).to.be.equal(uri);
+        expect(res[1]).to.be.equal(deps);
+        expect(res[2]).to.be.equal(temp);
+    });
 
+    it('分析入参3', function () {
+        var res = new NEJParser({}).doFormatARG(deps, uri, temp);
+        expect(res[0]).to.be.equal(uri);
+        expect(res[1]).to.be.equal(deps);
+        expect(res[2]).to.be.equal(temp);
+    });
+
+});
+
+describe('插件分析', function () {
     it('插件分析1', function () {
         var res = new NEJParser({}).doParsePlugin('text!index.html');
         expect(res[1] + '!' + res[0]).to.be.equal('text!index.html');
@@ -134,7 +129,9 @@ describe('_doFormatURI', function () {
         var res = new NEJParser({}).doParsePlugin('json!index.json');
         expect(res[1] + '!' + res[0]).to.be.equal('json!index.json');
     });
+});
 
+describe('demo', function () {
     it('demo1', function () {
         var analysis = new Analysis.default({
             alias: []

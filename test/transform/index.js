@@ -20,18 +20,15 @@ var alias1 = [
 ];
 
 
-describe('handleDeps', function () {
+describe('依赖转换', function () {
     it('依赖转换', function () {
         var deps = new Transform({
             alias: alias1
-        }).handleDeps([
+        }).reduceDeps([
             '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/helper/util.js'
         ], '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/pages/h5/index.js');
         expect(deps[0]).to.be.equal('h5lib/helper/util.js');
     });
-
-
-
 });
 
 
@@ -47,6 +44,7 @@ describe('自动补齐 return ', function () {
         });
         expect(!!~res.indexOf('return')).to.be.equal(true);
     });
+
     it('已有 return ，不需要加', function () {
         var res = new Transform({
             alias: alias1
