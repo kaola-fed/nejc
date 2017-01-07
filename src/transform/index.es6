@@ -10,9 +10,7 @@ const template = `<%depMap.forEach(function(item){%>var <%- item.name %> = <% if
 
 export default class Transform {
     constructor(opt) {
-
         Object.assign(this, opt);
-
     }
 
     transform(map) {
@@ -71,12 +69,12 @@ export default class Transform {
         const returnDeps = deps.map((item) => {
             const p = path
                 .relative(parent, item)
-                .replace(/\.js$/ig,'');
+                .replace(/\.js$/ig,'')
+                .replace(/\\/ig,'/');
 
             if (!p.startsWith('..')) {
                 return p.startsWith('.') ? p : './' + p;
             }
-
             let alias = this.alias.filter(alias => {
                 return !!(~item.indexOf(alias.value));
             })[0];

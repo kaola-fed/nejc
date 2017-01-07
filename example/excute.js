@@ -3,12 +3,14 @@
  */
 var path = require('path');
 require('../src/index')({
-    'src': 'src',
-    'dist': 'dist',
+    'src': 'nej-nej',
+    'dist': 'nej-commonjs',
     'ignoreFiles': ['nes'],
     'ext': ['.js'],
-    'alias':{
-        lib: path.resolve('./src/nej/src/'),
-        platform: path.resolve('./platform/')
+    'alias': {
+        lib: path.resolve('./nej-nej'),
+    },
+    'outputAlias': {
+        // lib: ''
     }
 });

@@ -1,10 +1,11 @@
 /**
  * Created by june on 2017/1/5.
  */
+var path = require('path');
 var argTest = function (option) {
     var key,value;
     for(var attr in option.alias){
-        if(!option.alias[attr].startsWith('/')){
+        if(option.alias[attr] != path.resolve(option.alias[attr])){
             key = 'alias[alias.xxx]';
             value = '绝对路径';
             break;

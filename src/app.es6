@@ -15,17 +15,20 @@ class App {
             ext: ['.js']
         }, opt);
 
-        let keys = Object.keys(opt.alias);
-
-        this.alias = keys.map(key => {
-            return {
-                key,
-                value: opt.alias[key]
-            }
-        });
+        this.alias = App.reduceAlias(opt.alias);
+        this.outputAlias = App.reduceAlias(opt.outputAlias);
 
         this.alias.sort((before, after) => {
             return before.value.length <= after.value.length
+        });
+    }
+    static reduceAlias(map){
+        let keys = Object.keys(map);
+        return  keys.map(key => {
+            return {
+                key,
+                value: map[key]
+            }
         });
     }
 
@@ -70,7 +73,9 @@ class App {
                     return cb(null, file);
                 }
 
-                const content = new Transform(options).transform(map);
+                const content = new Transform(Object.assign(options, {
+                    alias: (this.outputAlias || this.alias)
+                })).transform(map);
 
                 file.contents = new Buffer([firstCode, content].join(''));
                 file.path = replaceExt(file.path, '.js');

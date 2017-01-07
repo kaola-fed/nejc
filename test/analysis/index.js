@@ -11,10 +11,10 @@ var alias = [
         value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/',
     }, {
         key: 'lib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/lib/nej/src/',
+        value: path.join(__dirname,'test')+'/',
     }, {
         key: 'h5lib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/'
+        value: path.join(__dirname,'h5libdefine')+'/',
     }, {
         key: 'fedlib',
         value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/'
@@ -31,29 +31,24 @@ describe('依赖路径分析', function () {
     it('绝对路径', function () {
         var nejParser = new NEJParser({});
         var res = nejParser.doParsePlugin('./index.js');
-        var result = nejParser.doFormatURI(res[0], '/Users/june/Desktop/Projects/nice/test/analysis/index2.js', res[2]);
-        expect(result).to.be.equal('/Users/june/Desktop/Projects/nice/test/analysis/index.js');
+        var result = nejParser.doFormatURI(res[0], path.join(__dirname,'index2.js'), res[2]);
+        expect(result).to.be.equal(path.join(__dirname,'index.js'));
     });
 
     it('lib变量+不定义', function () {
         var nejParser = new NEJParser({});
         var res = nejParser.doParsePlugin('{lib}index.js');
-        var result = nejParser.doFormatURI(res[0], '/Users/june/Desktop/Projects/nice/test/analysis/index2.js', res[2]);
-        expect(result).to.be.equal('/Users/june/Desktop/Projects/nice/test/analysis/lib/index.js');
+        var result = nejParser.doFormatURI(res[0], path.join(__dirname,'index2.js'), res[2]);
+        expect(result).to.be.equal(path.join(__dirname, 'lib', 'index.js'));
     });
 
     it('lib变量+定义', function () {
         var nejParser = new NEJParser({
-            alias: [
-                {
-                    key: 'lib',
-                    value: '/Users/june/Desktop/Projects/lib/'
-                }
-            ]
+            alias: alias
         });
         var res = nejParser.doParsePlugin('{lib}index.js');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
-        expect(result).to.be.equal('/Users/june/Desktop/Projects/lib/index.js');
+        expect(result).to.be.equal(path.join(__dirname, 'test', 'index.js'));
     });
 
     it('platform变量+定义', function () {
@@ -77,7 +72,7 @@ describe('依赖路径分析', function () {
         var res = nejParser.doParsePlugin('h5lib/helper/util');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal('/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/' + 'helper/util.js');
+        expect(result).to.be.equal( path.join(__dirname,'h5libdefine','helper', 'util.js'));
     });
 
     it('变量2', function () {
@@ -87,7 +82,7 @@ describe('依赖路径分析', function () {
         var res = nejParser.doParsePlugin('base/klass');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal('/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/lib/nej/src/' + 'base/klass.js');
+        expect(result).to.be.equal(path.join(__dirname,'test','base','klass.js'));
     });
 });
 
