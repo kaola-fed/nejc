@@ -6,5 +6,15 @@ src/**/*.js
 src/**/*.map
 dist/
 
-example/nej-commonjs
-example/nej-es6
+example/nej-commonjs/base
+example/nej-commonjs/node_modules
+example/nej-commonjs/ui
+example/nej-commonjs/util
+example/nej-commonjs/define.js
+
+
+example/nej-es6/base
+example/nej-es6/node_modules
+example/nej-es6/ui
+example/nej-es6/util
+example/nej-es6/define.js

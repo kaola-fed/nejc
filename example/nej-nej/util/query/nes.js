@@ -179,7 +179,7 @@
 
 
   // ##2. Parser
-  // 
+  //
   // 为何要抽象成一个类? 其实这里只用到了一个实例
   // 事实上这个简单Parser还帮我实现了命令行参数解析，
   // zen-coding的实现等等, 它可以帮助实现基于正则式的
@@ -220,7 +220,7 @@
       // 返回数据并推入cache
       return this.cache.set(input, parsed);
     },
-    // ###添加新规则 : 
+    // ###添加新规则 :
     // 在nes中你可以想象成添加一个与Id、className、pesudo等价简单选择符
     on: function(rules) {
       if (typeOf(rules) === "string") { //当不是hash传入时
@@ -404,8 +404,8 @@
     // (:([\w\u4e00-\u9fbf-]+)(?:\(([^\(\)]*|(?:\([^\)]+\)|[^\(\)]*)+)\))?)|
     // (\[([\w\u4e00-\u9fbf-]+)(?:([*^$|~!]?=)['"]?((?:[\w\u4e00-\u9fbf-]||\s)+)['"]?)?\])|(::([\w\u4e00-\u9fbf-]+))
     // |([>\s+~&%](?!=))|(\s*\{\s*(\d*),(\-?\d*)\s*\}\s*)/g`
-    // 
-    // 看到上面那长串，你大概理解了将regexp按词法分开这样做的第一个原因 : __维护__. 
+    //
+    // 看到上面那长串，你大概理解了将regexp按词法分开这样做的第一个原因 : __维护__.
     // 第二个原因就是: __效率__  一次大型正则的调用时间要远低于多次小型正则的匹配(前提它们做同样规模的匹配)
   var
   // 一些macro
@@ -415,7 +415,7 @@
     operator: "[*^$|~!]?=",
     // 属性操作符 如= 、!=
     combo: "[>\\s+~](?!=)",
-    // 连接符 如 > ~ 
+    // 连接符 如 > ~
     word: "[\\\\\\w\\u00A1-\\uFFFF-]"
   },
     // 语法规则定义
@@ -483,7 +483,7 @@
       // 属性选择符  如  [class=hahaha]
       //
       // 这里以属性选择符为例，说明下reg与action的关系
-      // 
+      //
       attributes: {
         reg: "\\[\\s*({{word}}+)(?:({{operator}})[\'\"]?([^\'\"\\[]+)[\'\"]?)?\\s*\\]",
         action: function(all, key, operator, value) {
@@ -607,7 +607,7 @@
     // 对于selected checked 当返回为bool值时  将其标准化为 selected = "selected"
     // 方便后续处理
     // 很多时候null可以作为标志位，nes中大部分特殊flag都用null标示
-    return typeof node[key] === "boolean" 
+    return typeof node[key] === "boolean"
             ? node[key] ? key : null
             : (attrNode && attrNode.specified ?attrNode.value : null);
   };
@@ -627,7 +627,7 @@
     }
     return array;
   }
-  // 从sizzle抄袭的 document sorter 
+  // 从sizzle抄袭的 document sorter
   // 将匹配元素集按文档顺序排列好 这很重要!
   var sortor = (doc.compareDocumentPosition) ?
   function(a, b) {
@@ -702,7 +702,7 @@
     };
   })("nes_" + (+new Date).toString(36));
   // 创建nth相关的Filter，由于都类似，就统一通过工厂函数生成了
-  // 参数有两个  
+  // 参数有两个
   //    1. isNext: 代表遍历顺序是向前还是向后
   //    2. isType: 代表是否是要指定nodeName
 
@@ -751,7 +751,7 @@
       return ((position - start) / step >= 0) && ((position - start) % step === 0);
     };
   }
-  // 
+  //
   var nthPositionCache = {length: 1 };
   function clearNthPositionCache() {
     if (nthPositionCache.length) {
@@ -794,7 +794,7 @@
       return tmp;
     }
   };
-  // ### filter: 
+  // ### filter:
   // Action中塞入的数据会统一先这里处理，可能是直接处理如id、class等简单的.
   // 也可能是分发处理，甚至是多重的分发，如那些复杂的attribute或者是pesudo
   // 这里简化到过滤单个节点 逻辑清晰 ,但可能性能会降低，因为有些属性会重复获取
@@ -854,7 +854,7 @@
     }
   };
 
-  // expandFilters 
+  // expandFilters
   // -------------------------
   // 原生可扩展的方法
   var expandFilters = {
@@ -929,7 +929,7 @@
       "nth-last-child": createNthFilter(false, false),
       "nth-of-type": createNthFilter(true, true),
       "nth-last-of-type": createNthFilter(false, true),
-  
+
       "first-child": function(node) {
         return !nthPrev(node);
       },
@@ -1001,7 +1001,7 @@
   // 这个全局cache的引入是为了避免多次传入参数。
   // 当然全局的缺点也很明显，维护会不方便, 不利于测试
   var matchesCache = null; //保存那些matches函数
-  
+
 
   function matchData(node, data, ignored) { // 稍后再看存入step
     var len = data.length,
@@ -1080,7 +1080,7 @@
   //    1. parsed.data  parse数据为一数组
   //    2. node         context节点
   // 事实上没有data这个单词，我这里算是自定了这个单词
-  //     datas : [data,data]   
+  //     datas : [data,data]
   //     data : [datum, datum]
   //     datum: {tag:"*"....etc}
 
@@ -1107,7 +1107,7 @@
   // API : 测试用get相当于all (private)
   // -------------------------------------
   // 为了测试时避免原生querySelector的影响
-  // 
+  //
 
 
   function get(sl, context) {
@@ -1116,7 +1116,7 @@
     return result;
   }
 
-  // API 
+  // API
   // ----------------------------------------------------------------------
   var supportQuerySelector = !! doc.querySelector;
 
@@ -1156,7 +1156,7 @@
     return nodeList;
   }
 
-  // API 3: 
+  // API 3:
   // ----------------------------------------------------------------------
   // 对应标准的matches方法
   // nes的matches功能稍强，它支持用分隔符链接符组合的复杂选择器
@@ -1188,7 +1188,7 @@
     }
   }
 
-  // ASSEMBLE 
+  // ASSEMBLE
   // =========================
   // 组装分为几个步骤
   //
@@ -1234,7 +1234,7 @@
   // -------------------------------------
   //
   // 直接设置其为true 来强制不适用原生querySelector Api
-  nes.debug = false; 
+  nes.debug = false;
   nes._nthCache = nthCache;
   // parser , 抽离的parser部分
   // ---------------------------
@@ -1255,11 +1255,11 @@
   nes._get = get;
   //        *主要API*
   // -------------------------
-  nes.one = one; 
-  nes.all = all; 
+  nes.one = one;
+  nes.all = all;
   nes.matches = matches;
   // 内建扩展 api 这三个已经内建:
-  // 
+  //
   // 1. `pesudos`
   // 2. `operators`
   // 3. `combos`
@@ -1270,7 +1270,7 @@
 
   //          5.Exports
   // ----------------------------------------------------------------------
-  // 暴露API:  amd || commonjs  || global 
+  // 暴露API:  amd || commonjs  || global
   // 支持commonjs
   if (typeof exports === 'object') {
     module.exports = nes;
@@ -1279,10 +1279,11 @@
 /* */define(function() {
       return nes;
     });
-  } else {
-    // 直接暴露到全局
-    win.nes = nes;
   }
+
+  // 直接暴露到全局
+  // 兼容 NEJ 模块化
+  win.nes = nes;
 
   //        6. extension
   //-------------------------------------------------------------
@@ -1312,7 +1313,7 @@
           if (testNode.nodeType === 1 && nes.matches(testNode, sl)) position++;
           if (testNode === node) break;
         } while (testNode = testNode[next]);
-        
+
         if (step === 0) return position === start;
         return ((position - start) / step >= 0) && ((position - start) % step === 0);
     };

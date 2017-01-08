@@ -26,7 +26,7 @@ class Compiler {
             this.result = this.result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
         }
 
-        this.result = this.result + '\n\nmodule.exports = moduleExports()\n';
+        this.result = this.result + '\n\nmodule.exports = moduleExports.call(window)\n';
 
         return this;
     }

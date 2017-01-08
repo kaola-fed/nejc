@@ -3,9 +3,19 @@
  */
 window.DEBUG = 0;
 /**
- * 开启兼容模式
+ * 禁用兼容模式
  */
-window.CMPT = !0;
+window.CMPT = 0;
+/**
+ * NEJ 的命名空间
+ */
+window.NEJ = {};
+
+/*
+ * --------------------------------------------
+ * 以上代码需要在 NEJ 版本升级后 人为添加
+ */
+
 /*
  * --------------------------------------------
  * 原生对象扩展接口
@@ -68,7 +78,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *
      *  ```javascript
      *  var scope = {a:0};
-     * 
+     *
      *  var func = function(a,b){
      *      // 第一个参数 ：1
      *      console.log(a);
@@ -77,7 +87,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *      // 当前this.a ： 0
      *      console.log(this.a);
      *  };
-     * 
+     *
      *  func._$bind(scope,"1")(2);
      *  ```
      *
@@ -104,7 +114,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *
      *  ```javascript
      *  var scope = {a:0};
-     * 
+     *
      *  var func = function(a,b){
      *      // 第一个参数 ：2
      *      console.log(a);
@@ -113,7 +123,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *      // 当前this.a ： 0
      *      console.log(this.a);
      *  };
-     * 
+     *
      *  func._$bind(scope,"1")(2);
      *  ```
      *
@@ -178,7 +188,7 @@ NEJ.define(function(_p,_o,_f,_r){
                 }
             }
         );
-        
+
         return NEJ;
     }
 
