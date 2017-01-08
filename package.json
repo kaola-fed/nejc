@@ -39,6 +39,7 @@
     "gulp-util": "^3.0.8",
     "js-beautify": "^1.6.8",
     "jscodeshift": "^0.3.30",
+    "lebab": "^2.7.0",
     "replace-ext": "^1.0.0",
     "through2": "^2.0.3",
     "yargs": "^6.6.0"

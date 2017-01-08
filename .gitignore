@@ -7,3 +7,4 @@ src/**/*.map
 dist/
 
 example/nej-commonjs
+example/nej-es6

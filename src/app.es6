@@ -4,6 +4,7 @@ import Source from './source';
 import through2 from 'through2';
 import gulpUtil from 'gulp-util';
 import replaceExt from 'replace-ext';
+import lebab from 'lebab';
 import path from 'path';
 
 const PluginError = gulpUtil.PluginError;
@@ -22,7 +23,8 @@ class App {
             return before.value.length <= after.value.length
         });
     }
-    static reduceAlias(map){
+
+    static reduceAlias(map = {}) {
         let keys = Object.keys(map);
         return  keys.map(key => {
             return {
@@ -73,9 +75,18 @@ class App {
                     return cb(null, file);
                 }
 
-                const content = new Transform(Object.assign(options, {
-                    alias: (this.outputAlias || this.alias)
+                let content = new Transform(Object.assign(options, {
+                    alias: (this.outputAlias || this.alias),
+                    syntax: this.syntax
                 })).transform(map);
+                if (this.syntax === 'es6') {
+                  const result = lebab.transform(content, ['commonjs', 'obj-shorthand', 'template', 'default-param', 'includes']);
+                  content = result.code;
+
+                  if (result.warnings.length > 0) {
+                    console.log(result.warnings);
+                  }
+                }
 
                 file.contents = new Buffer([firstCode, content].join(''));
                 file.path = replaceExt(file.path, '.js');

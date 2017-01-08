@@ -2,7 +2,7 @@
  * Created by june on 2017/1/3.
  */
 'use strict';
-import 'babel-polyfill';
+// import 'babel-polyfill';
 import gulp from 'gulp';
 import App from './app';
 import fs from 'fs';

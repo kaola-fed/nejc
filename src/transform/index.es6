@@ -4,7 +4,7 @@ import {js_beautify} from 'js-beautify';
 import Compiler from './compiler';
 import ejs from 'ejs';
 const jsBeatify = str => js_beautify(str, {indent_size: 4});
-const template = `<%depMap.forEach(function(item){%>var <%- item.name %> = <% if( typeof item.uri === 'string'){ %>require('<%- item.uri  %>')<%}else {%><%= item.uri() %><%}%>;
+const template = `<%depMap.forEach(function(item){%><%- variable %> <%- item.name %> = <% if( typeof item.uri === 'string'){ %>require('<%- item.uri  %>')<%}else {%><%= item.uri() %><%}%>;
 <%})%>
 <%- fn %>;`;
 
@@ -37,7 +37,7 @@ export default class Transform {
         });
 
         return ejs.render(template, {
-            depMap, fn: body
+            depMap, fn: body, variable: this.syntax === 'es6' ? 'const' : 'var'
         });
     }
 

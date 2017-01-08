@@ -1,8 +1,8 @@
 var path = require('path');
 module.exports = {
   'src': 'nej-nej',
-  'dist': 'nej-commonjs',
-  'syntax': 'commonjs',
+  'dist': 'nej-es6',
+  'syntax': 'es6',
   'ignoreFiles': ['nes'],
   'ext': ['.js'],
   'alias': {

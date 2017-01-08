@@ -57,6 +57,7 @@ var configOption;
 try {
     configOption = require(path.resolve(process.cwd(), config));
 } catch (e) {
+    console.log(e);
     configOption = {
         src, dist,
         ignoreFiles, ignoreExt
