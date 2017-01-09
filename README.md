@@ -22,6 +22,7 @@ All done
 
 ## 关于输出
 * [NEJ-CommonJS](https://www.npmjs.com/package/nej-commonjs) 
+* [NEJ-ES6](https://www.npmjs.com/package/nej-es6) 
 
 ## LICENSE
 [![license][license-image]][license-url]
