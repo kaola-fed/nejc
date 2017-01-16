@@ -1,20 +1,3 @@
-/**
- * 禁用 DEBUG 代码
- */
-window.DEBUG = 0;
-/**
- * 禁用兼容模式
- */
-window.CMPT = 0;
-/**
- * NEJ 的命名空间
- */
-window.NEJ = {};
-
-/*
- * --------------------------------------------
- * 以上代码需要在 NEJ 版本升级后 人为添加
- */
 
 /*
  * --------------------------------------------
@@ -44,6 +27,23 @@ window.NEJ = {};
  * @external Function
  */
 NEJ.define(function(_p,_o,_f,_r){
+    /*
+     * --------------------------------------------
+     * 以下代码需要在 NEJ 版本升级后 人为添加
+     */
+    /**
+     * 禁用 DEBUG 代码
+     */
+    window.DEBUG = 0;
+    /**
+     * 禁用兼容模式
+     */
+    window.CMPT = !0;
+    /**
+     * NEJ 的命名空间
+     */
+    window.NEJ = {};
+
     var _extpro = Function.prototype;
     /**
      * AOP增强操作，增强操作接受一个输入参数包含以下信息
@@ -194,3 +194,5 @@ NEJ.define(function(_p,_o,_f,_r){
 
     return _p;
 });
+
+

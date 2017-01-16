@@ -7,11 +7,15 @@ class HasReturnStatement {
 
     compile() {
         let len = 0;
-        jscodeshift(this.input)
-            .find(jscodeshift.ReturnStatement)
-            .forEach((path) => {
-                if (HasReturnStatement.getRoot(path).name === null) len++;
-            });
+        try {
+            jscodeshift(this.input)
+                .find(jscodeshift.ReturnStatement)
+                .forEach((path) => {
+                    if (HasReturnStatement.getRoot(path).name === null) len++;
+                });
+        } catch(err) {
+            console.log(this.input);
+        }
         return len > 0;
     }
 

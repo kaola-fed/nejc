@@ -19,11 +19,10 @@ export default class Analysis {
         }
 
         try {
-
             map = compiler(NEJParser, this.alias, this.file);
 
         } catch (err) {
-            console.log(err);
+            console.log(`[Warning] 解析失败，输出源码: ${this.file} `);
             return -1;
         }
 

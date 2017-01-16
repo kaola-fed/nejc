@@ -43,7 +43,8 @@ class App {
 
             const options = {
                 file: file.path,
-                alias: this.alias
+                alias: this.alias,
+                mode: (typeof this.mode === 'undefined')? 1: 2
             };
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
@@ -69,7 +70,7 @@ class App {
                     matchedStr
                 } = new Source().source(sourceContent);
 
-                const map = new Analysis(options).analysis(matchedStr);
+                const map = new Analysis(options).analysis(sourceContent);
 
                 if (-1 === map) {
                     return cb(null, file);
@@ -80,7 +81,7 @@ class App {
                     syntax: this.syntax
                 })).transform(map);
                 if (this.syntax === 'es6') {
-                  const result = lebab.transform(content, ['commonjs', 'obj-shorthand', 'template', 'default-param', 'includes']);
+                  const result = lebab.transform(content, ['commonjs', /**'obj-shorthand', 'template', 'default-param', 'includes'**/]);
                   content = result.code;
 
                   if (result.warnings.length > 0) {

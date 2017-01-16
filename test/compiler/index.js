@@ -1,4 +1,4 @@
-var hasReturnStatement = require('../../src/transform/hasReturnStatement').default;
+var hasReturnStatement = require('../../src/analysis/hasReturnStatement').default;
 var expect = require('chai').expect;
 var cwd = process.cwd();
 var path = require('path');

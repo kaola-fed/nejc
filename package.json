@@ -4,7 +4,6 @@
   "description": "nej => commonjs",
   "main": "index.js",
   "bin": {
-    "nice": "cli/nice",
     "nce": "cli/nice"
   },
   "directories": {

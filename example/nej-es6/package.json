@@ -1,6 +1,6 @@
 {
   "name": "nej-es6",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "NEJ-ES6, dest by nice (https://github.com/kaola-fed/nice)",
   "main": "index.js",
   "scripts": {

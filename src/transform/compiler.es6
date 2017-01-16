@@ -1,12 +1,14 @@
-import HasReturnStatement from './hasReturnStatement';
+import HasReturnStatement from '../analysis/hasReturnStatement';
 
 class Compiler {
-    constructor(input, ap) {
+    constructor(input, ap, depStr) {
         this.ap = ap;
         this.result = input;
+        this.depStr = depStr;
     }
 
-    compile() {
+    compile(file) {
+        this.file = file;
         this
             .reduceWrapFunction()
             .reduceReturnStatement();
@@ -15,19 +17,22 @@ class Compiler {
     }
 
     reduceWrapFunction() {
-        this.result = this.result.replace(/^\s*function\s*\([^)]*\)\s*\{/, 'function moduleExports () {');
+        this.result = this.result.replace(
+            /^\s*function\s*\([^)]*\)\s*\{/,
+            'function EXP () {' + (this.depStr || ''));
         return this;
     }
 
     reduceReturnStatement() {
-        const hasReturnStatement = new HasReturnStatement(this.result).compile();
+        if (this.ap) {
+            const hasReturnStatement = new HasReturnStatement(this.result).compile();
+            if (!hasReturnStatement) {
+                this.result = this.result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
+            } else {
 
-        if (this.ap && !hasReturnStatement) {
-            this.result = this.result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
+            }
         }
-
-        this.result = this.result + '\n\nmodule.exports = moduleExports.call(window)\n';
-
+        this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
         return this;
     }
 }

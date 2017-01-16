@@ -5,7 +5,7 @@ var path = require('path');
 var argTest = function (option) {
     var key,value;
     for(var attr in option.alias){
-        if(option.alias[attr] != path.resolve(option.alias[attr])){
+        if(!option.alias[attr].startsWith('/')) {
             key = 'alias[alias.xxx]';
             value = '绝对路径';
             break;

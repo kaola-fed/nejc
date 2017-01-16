@@ -36,18 +36,21 @@ describe('自动补齐 return ', function () {
 
     it('没有 return ，要加 ', function () {
         var res = new Transform({
-            alias: alias1
+            alias: alias1,
+            mode: 1
         }).transform({
             d: [],
             n: path.resolve(cwd,'index.js'),
             f: 'function(pro){}'
         });
+        console.log(res)
         expect(!!~res.indexOf('return')).to.be.equal(true);
     });
 
     it('已有 return ，不需要加', function () {
         var res = new Transform({
-            alias: alias1
+            alias: alias1,
+            mode: 1
         }).transform({
             d: [],
             n: path.resolve(cwd,'index.js'),

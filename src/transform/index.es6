@@ -4,8 +4,8 @@ import {js_beautify} from 'js-beautify';
 import Compiler from './compiler';
 import ejs from 'ejs';
 const jsBeatify = str => js_beautify(str, {indent_size: 4});
-const template = `<%depMap.forEach(function(item){%><%- variable %> <%- item.name %> = <% if( typeof item.uri === 'string'){ %>require('<%- item.uri  %>')<%}else {%><%= item.uri() %><%}%>;
-<%})%>
+const template = `
+<%- depStr %>
 <%- fn %>;`;
 
 export default class Transform {
@@ -24,7 +24,7 @@ export default class Transform {
         const autoReturnArg = args[deps.length];
 
         const parent = path.parse(map.n).dir;
-        const body = jsBeatify(new Compiler(functionBody, autoReturnArg).compile());
+
         const importDeps = this.reduceDeps(deps, parent);
 
         const depMap = args.map((item, idx) => {
@@ -36,9 +36,25 @@ export default class Transform {
             }
         });
 
-        return ejs.render(template, {
-            depMap, fn: body, variable: this.syntax === 'es6' ? 'const' : 'var'
-        });
+        const variable = this.syntax === 'es6' ? 'let' : 'var';
+        const depStr = depMap.map(item => {
+            return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('"+ item.uri +"')": item.uri()};`;
+        }).join('\n');
+
+
+        if (this.mode === 1) {
+            const body = jsBeatify(new Compiler(functionBody, autoReturnArg).compile(this.file));
+            return ejs.render(template, {
+                fn: body,
+                depStr
+            });
+        } else if (this.mode === 2) {
+            const body = jsBeatify(new Compiler(functionBody, autoReturnArg, depStr).compile(this.file));
+            return ejs.render(template, {
+                fn: body,
+                depStr: '',
+            });
+        }
     }
 
     static getArgs(fn) {
@@ -78,10 +94,10 @@ export default class Transform {
             let alias = this.alias.filter(alias => {
                 return !!(~item.indexOf(alias.value));
             })[0];
-
+            
             if (alias && alias.key) {
                 return item
-                    .replace(alias.value, alias.key + '/')
+                    .replace(alias.value, alias.key.replace(/\/$/, '') + '/')
                     .replace(/^\//g, '');
             }
             return p;
