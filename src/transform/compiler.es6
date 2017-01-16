@@ -32,7 +32,15 @@ class Compiler {
 
             }
         }
-        this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
+
+        const file = this.file.replace(/\\/g,'//');
+        if (~file.indexOf('base/element.js')
+            || ~file.indexOf('base/event.js')) {
+            this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window)\n';
+        } else {
+            this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
+        }
+
         return this;
     }
 }

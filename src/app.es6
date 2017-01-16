@@ -44,7 +44,7 @@ class App {
             const options = {
                 file: file.path,
                 alias: this.alias,
-                mode: (typeof this.mode === 'undefined')? 1: 2
+                mode: (typeof this.mode === 'undefined')? 1: this.mode
             };
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
