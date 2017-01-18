@@ -1,10 +1,10 @@
 import HasReturnStatement from '../analysis/hasReturnStatement';
 
 class Compiler {
-    constructor(input, ap, depStr) {
+    constructor(input, ap, args) {
         this.ap = ap;
         this.result = input;
-        this.depStr = depStr;
+        this.args = args;
     }
 
     compile(file) {
@@ -19,7 +19,7 @@ class Compiler {
     reduceWrapFunction() {
         this.result = this.result.replace(
             /^\s*function\s*\([^)]*\)\s*\{/,
-            'function EXP () {' + (this.depStr || ''));
+            'function EXP (' + this.args.join(',') + ') {');
         return this;
     }
 
@@ -34,13 +34,16 @@ class Compiler {
         }
 
         const file = this.file.replace(/\\/g,'//');
-        if (~file.indexOf('base/element.js')
-            || ~file.indexOf('base/event.js')) {
-            this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window)\n';
+        if (!this.args) {
+            if (~file.indexOf('base/element.js')
+                || ~file.indexOf('base/event.js')) {
+                this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window)\n';
+            } else {
+                this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
+            }
         } else {
-            this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
+            this.result = this.result + '\n\nmodule.exports = EXP.call(window,' + this.args.join(',') + ')\n';
         }
-
         return this;
     }
 }

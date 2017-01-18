@@ -6,6 +6,7 @@ import ejs from 'ejs';
 const jsBeatify = str => js_beautify(str, {indent_size: 4});
 const template = `
 <%- depStr %>
+
 <%- fn %>;`;
 
 export default class Transform {
@@ -49,10 +50,10 @@ export default class Transform {
                 depStr
             });
         } else if (this.mode === 2) {
-            const body = jsBeatify(new Compiler(functionBody, autoReturnArg, depStr).compile(this.file));
+            const body = jsBeatify(new Compiler(functionBody, autoReturnArg, args).compile(this.file));
             return ejs.render(template, {
                 fn: body,
-                depStr: '',
+                depStr,
             });
         }
     }
