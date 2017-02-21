@@ -1,10 +1,10 @@
 import HasReturnStatement from '../analysis/hasReturnStatement';
 
 class Compiler {
-    constructor(input, ap, args) {
+    constructor(input, ap, depStr) {
         this.ap = ap;
         this.result = input;
-        this.args = args;
+        this.depStr = depStr;
     }
 
     compile(file) {
@@ -18,8 +18,13 @@ class Compiler {
 
     reduceWrapFunction() {
         this.result = this.result.replace(
-            /^\s*function\s*\([^)]*\)\s*\{/,
-            'function EXP (' + this.args.join(',') + ') {');
+            /^\s*function\s*\([^)]*\)\s*\{/, [
+                '/** Module Export Wrapper **/ function EXP () {',
+                /**
+                 * Hack ES5 Inner Function Dependency
+                 */
+                this.depStr || ''
+            ].join('\n')) ;
         return this;
     }
 
@@ -33,16 +38,21 @@ class Compiler {
             }
         }
 
+        /**
+         * Hack Windows Sep
+         * @type {*}
+         */
         const file = this.file.replace(/\\/g,'//');
-        if (!this.args) {
-            if (~file.indexOf('base/element.js')
-                || ~file.indexOf('base/event.js')) {
-                this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window)\n';
-            } else {
-                this.result = this.result + '\n\nmodule.exports = EXP.call(window)\n';
-            }
+
+        /**
+         * Hack NEJ Circle Dependencies
+         * @type {*}
+         */
+        if (~file.indexOf('base/element.js')
+            || ~file.indexOf('base/event.js')) {
+            this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window);\n';
         } else {
-            this.result = this.result + '\n\nmodule.exports = EXP.call(window,' + this.args.join(',') + ')\n';
+            this.result = this.result + '\n\nmodule.exports = EXP.call(window);\n';
         }
         return this;
     }

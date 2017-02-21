@@ -2,6 +2,9 @@
 [![Build Status][travis-image]][travis-url]
 > nice 是一个 [nej](https://github.com/genify/nej) => commonjs 规范的大胆尝试，目前还在密集开发阶段。
 
+## 介绍
+查看 [介绍](./docs/intro.md)
+ 
 ## 如何体验
 1. `git clone https://github.com/kaola-fed/nice`
 2. `cd /path/to/nice/`
@@ -11,6 +14,7 @@
 6. 设置你的环境变量, NODE_ENV=development
 7. 参照 ./example/nice.config.js 编写你的配置文件，放到你需要迁移的工程目录下面
 8. `nice`
+
 
 ## 关于贡献代码
 1. 在 issues 栏中新建一个 issue
