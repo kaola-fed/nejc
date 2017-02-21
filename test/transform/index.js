@@ -44,7 +44,6 @@ describe('自动补齐 return ', function () {
             n: path.resolve(cwd,'index.js'),
             f: 'function(pro){}'
         });
-        console.log(res)
         expect(!!~res.indexOf('return')).to.be.equal(true);
     });
 
