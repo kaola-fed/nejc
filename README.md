@@ -75,5 +75,5 @@ All done
 [license-url]: https://github.com/kaola-fed/NEK/blob/master/LICENSE
 [license-image]: https://img.shields.io/github/license/kaola-fed/NEK.svg
 
-[travis-image]: https://travis-ci.org/kaola-fed/nejc.svg?branch=master
-[travis-url]: https://travis-ci.org/kaola-fed/nejc
+[travis-image]: https://travis-ci.org/kaola-fed/NejC.svg?branch=master
+[travis-url]: https://travis-ci.org/kaola-fed/NejC
