@@ -6,7 +6,7 @@
 查看 [介绍](./docs/intro.md)
  
 ## 如何体验
-### cli 式
+### 一、cli 式
 1. 安装 NejC 到全局
 ```bash
 $ npm i --global nejc
@@ -22,7 +22,7 @@ $ touch nejc.config.js # 创建 nejc.config.js
 $ nejc
 ```
 
-### Gulp Plugin 式
+### 二、Gulp Plugin 式
 1. 安装 NejC 到工程
 ```bash
 $ cd /path/to/project
