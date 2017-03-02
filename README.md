@@ -1,6 +1,6 @@
-# nejc
+# NejC
 [![Build Status][travis-image]][travis-url]
-> nejc 是一个 [nej](https://github.com/genify/nej) => commonjs 规范的大胆尝试，目前还在密集开发阶段。
+> NejC 是一个 [nej](https://github.com/genify/nej) => commonjs 规范的大胆尝试，目前还在密集开发阶段。
 
 ## 介绍
 查看 [介绍](./docs/intro.md)
