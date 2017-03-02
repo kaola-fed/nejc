@@ -6,7 +6,7 @@
 查看 [介绍](./docs/intro.md)
  
 ## 如何体验
-### 一、cli 式
+### 一、CLI 式
 1. 安装 NejC 到全局
 ```bash
 $ npm i --global nejc
