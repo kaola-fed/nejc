@@ -78,7 +78,9 @@ NEJ.define([
      * @return {String} 属性值
      */
     _p.__getAttribute = function(_element,_name){
-        return _element.getAttribute(_name);
+        if ('getAttribute' in _element){
+            return _element.getAttribute(_name);
+        }
     };
     /**
      * 将dom节点转为xml串
@@ -373,13 +375,13 @@ NEJ.define([
             }
         )>=0;
     };
-    // for init core加载执行，占用时间较长
-    //(function(){
-    //    if (!_ospt.css3d){
-    //        var _matrix = _p.__getCSSMatrix();
-    //        _ospt.css3d = !!_matrix&&_matrix.m41!=null;
-    //    }
-    //})();
+    // for init
+    (function(){
+        if (!_ospt.css3d){
+            var _matrix = _p.__getCSSMatrix();
+            _ospt.css3d = !!_matrix&&_matrix.m41!=null;
+        }
+    })();
 
     return _p;
 });

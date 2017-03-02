@@ -7,11 +7,11 @@ var path = require('path');
 var argTest = require('./argTest');
 
 var argv = require('yargs')
-    .usage('Usage: nice [options]')
+    .usage('Usage: nejc [options]')
 
     .alias('c', 'config')
     .describe('c', '配置文件')
-    .default('c', 'nice.config.js')
+    .default('c', 'nejc.config.js')
 
     .alias('s', 'src')
     .describe('s', 'source code')
@@ -36,12 +36,12 @@ var argv = require('yargs')
 
     .alias('v', 'version')
     .describe('v', 'Show version')
-    .version(() => pkg.version)
+    .version(() => `v${pkg.version}`)
 
     .help('h')
     .alias('h', 'help')
 
-    .example('nice -s src -d dist -if ignore.js -ie .es6,.html')
+    .example('nejc -s src -d dist -if ignore.js -ie .es6,.html')
     .argv;
 
 var src = argv.s,

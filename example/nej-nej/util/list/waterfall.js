@@ -148,6 +148,10 @@ NEJ.define([
      */
     _pro.__destroy = function(){
         this.__super();
+        if (this.__stimer){
+            window.clearTimeout(this.__stimer);
+            delete this.__stimer;
+        }
         delete this.__nmore;
         delete this.__sbody;
         delete this.__endskr;
@@ -183,6 +187,18 @@ NEJ.define([
         ]]);
     };
     /**
+     * 延时加载下一页数据
+     *
+     * @protected
+     * @method module:util/list/waterfall._$$ListModuleWF#__doLoadNextByTimer
+     * @return {Void}
+     */
+    _pro.__doLoadNextByTimer = function(){
+        if (!this.__endskr){
+            this._$next();
+        }
+    };
+    /**
      * 检查滚动条
      * 
      * @protected
@@ -199,7 +215,13 @@ NEJ.define([
                      _element.scrollTop-_element.clientHeight,
             _noscroll = _element.scrollHeight<=_element.clientHeight;
         if (_delta<=this.__delta||(_noscroll&&!this.__endskr)){
-            this._$next();
+            // render first
+            if (this.__stimer){
+                window.clearTimeout(this.__stimer);
+            }
+            this.__stimer = window.setTimeout(
+                this.__doLoadNextByTimer._$bind(this),0
+            );
         }
     };
     /**
@@ -211,9 +233,11 @@ NEJ.define([
      */
     _pro.__onCheckScroll = function(_event){
         if (this.__endskr) return;
-        this.__doCheckScroll(
-            _v._$getElement(_event)
-        );
+        var _node = _v._$getElement(_event);
+        if (!_node){
+            _node = _e._$getPageBox();
+        }
+        this.__doCheckScroll(_node);
     };
     /**
      * 页码变化处理逻辑
@@ -265,8 +289,9 @@ NEJ.define([
      */
     _pro.__cbListLoad = function(_options){
         delete this.__nexting;
-        this.__super(_options);
-        this._$resize();
+        if (!this.__super(_options)){
+            this._$resize();
+        }
     };
     /**
      * 列表变化回调（删除/添加）
@@ -276,7 +301,10 @@ NEJ.define([
      * @return {Void}
      */
     _pro.__cbListChange = function(_event){
-        if (_event.key!=this.__ropt.key) return;
+        if (!!_event.key&&
+            _event.key!=this.__ropt.key){
+            return;
+        }
         switch(_event.action){
             case 'refresh':
             case 'append':
@@ -498,7 +526,7 @@ NEJ.define([
             this.__first:this.__limit;
         this.__doChangeOffset(_offset);
     };
-    
+
     if (CMPT){
         NEJ.copy(NEJ.P('nej.ut'),_p);
     }

@@ -13,8 +13,9 @@ NEJ.define([
     'base/event',
     'base/util',
     '{platform}editor.js',
-    'util/event'
-],function(NEJ,_k,_e,_v,_u,_h,_t,_p,_o,_f,_r){
+    'util/event',
+    'base/platform'
+],function(NEJ,_k,_e,_v,_u,_h,_t,_m,_p,_o,_f,_r){
     var _pro;
     /**
      * 富媒体编辑器输入区封装
@@ -109,6 +110,7 @@ NEJ.define([
         if (location.hostname!=document.domain)
             _document.domain = document.domain;
         _document.close(); // <- will trigger iframe onload
+        _h.__supportSelectionChange(_document.body);
         this.__doInitDomEvent([[
             _document,'click',
             this.__onDocumentClick._$bind(this)
@@ -236,7 +238,7 @@ NEJ.define([
      * 聚焦编辑器
      *
      * @method module:util/editor/area._$$EditorArea#_$focus
-     * @param  {Number} arg0 - 光标位置，默认为0，0-末尾、1-起始、2-不变
+     * @param  {Number} arg0 - 光标位置，默认为0，0-末尾、1-起始、2-不变、3-IE11-bug
      * @return {Void}
      */
     _pro._$focus = function(_cursor){
@@ -266,12 +268,13 @@ NEJ.define([
      */
     _pro._$getContent = function(_options){
         var _document = this._$getDocument(),
-            _noId,_keepStyle;
-        _html = _h.__filterContent(!_document?'':_document.body.innerHTML);
+            _noId,_keepStyle,_keepClass;
         if (_u._$isObject(_options)){
+            _keepClass = _options.keepClass||false;
             _keepStyle = _options.keepStyle||false;
             _noId   = _options.noId;
         }
+        _html = _h.__filterContent(!_document?'':_document.body.innerHTML,_keepClass);
         if (!_keepStyle){
             _html = _h.__filterContentStyle(_html);
         }
@@ -334,10 +337,14 @@ NEJ.define([
     _pro._$execCommand = function(_command,_value,_css){
         var _document = this._$getDocument();
         if (!_document) return;
-        this._$focus(2);
+        // this._$focus(2);
         _h.__execCommand(_document,'styleWithCSS',false);
         _h.__execCommand(_document,_command,_value);
-        this._$focus(2);
+        if (_command == 'inserthtml'){
+            this._$focus(3);
+        }else{
+            this._$focus(2);
+        }
         this.__onInputCheck();
     };
     /**
@@ -349,9 +356,13 @@ NEJ.define([
      * @return {Variable} 查询结果
      */
     _pro._$queryCommand = function(_command,_type){
-        var _document = this._$getDocument();
-        return !_document ? null
-               :_document['queryCommand'+_type](_command);
+        try{
+            var _document = this._$getDocument();
+            return !_document ? null
+                :_document['queryCommand'+_type](_command);
+        }catch(ex){
+            return null;
+        }
     };
     /**
      * 获取选中内容的文本

@@ -11,5 +11,6 @@ module.exports = {
         lib: path.resolve('./nej-nej'),
     },
     'outputAlias': {},
-    'mode': 2
+    'mode': 2,
+    // 'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var']
 };

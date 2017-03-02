@@ -88,10 +88,11 @@ NEJ.define([
      * @return {Void}
      */
     _pro.__onLoadRequest = function(_text){
-        var _json;
         try{
-            _json = JSON.parse(_text);
-            this._$dispatchEvent('onload',_json);
+            var _ret = _e._$text2type(
+                _text,this.__request.type
+            );
+            this._$dispatchEvent('onload',_ret);
         }catch(ex){
             this._$dispatchEvent('onerror',{
                 code:_g._$CODE_ERREVAL,
@@ -194,10 +195,7 @@ NEJ.define([
      * @return {Void}
      */
     _pro._$abort = function(){
-        this._$dispatchEvent('onerror',{
-            code:_g._$CODE_ERRABRT,
-            message:'客户端终止文件上传'
-        });
+        this.__onAbort();
     };
 
     return _p;

@@ -24,7 +24,7 @@ NEJ.define([
      * #suggest-input{height:24px;line-height:24px;}
      * #card0{position:absolute;top:40px;left:0;width:100%;height:auto;background:#ccc;}
      * ```
-     * 
+     *
      * 结构举例
      * ```html
      * <div class="box" tabindex="10005">
@@ -32,7 +32,7 @@ NEJ.define([
      *   <div id="suggest-list"></div>
      * </div>
      * ```
-     * 
+     *
      * 脚本举例
      * ```javascript
      * NEJ.define([
@@ -64,15 +64,16 @@ NEJ.define([
      * @property {Node|String} input    - 输入框
      * @property {Node|String} body     - 提示卡片节点
      * @property {Boolean}     autofill - 选择时是否自动填充
+     * @property {Boolean}     noblur   - 禁用失去焦点时是否触发选中效果
      * @property {String}      clazz    - 可选节点样式标识，默认为所有子节点
      * @property {String}      selected - 提示项选中样式，默认为js-selected
      */
-    /** 
+    /**
      * 输入内容变化触发事件
      * @event  module:util/suggest/suggest._$$Suggest#onchange
      * @param  {String} event - 输入框去前后空格后的内容
      */
-    /** 
+    /**
      * 选中建议项触发事件
      * @event  module:util/suggest/suggest._$$Suggest#onselect
      * @param  {String} event - 节点的data-value值，没有则取节点的value
@@ -96,7 +97,7 @@ NEJ.define([
     };
     /**
      * 控件重置
-     * 
+     *
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__reset
      * @param  {Object} arg0 - 可选配置参数
@@ -117,17 +118,20 @@ NEJ.define([
         ],[
             this.__input,'focus',
             this.__onInput._$bind(this)
-        ],[
-            this.__input,'blur',
-            this.__onBlur._$bind(this)
         ]]);
+        if (!_options.noblur){
+            this.__doInitDomEvent([[
+                this.__input,'blur',
+                this.__onBlur._$bind(this)
+            ]]);
+        }
         // init helper
         this._$visibile(!1);
         this.__helper = _t1._$$SelectHelper._$allocate(this.__sopt);
     };
     /**
      * 控件销毁
-     * 
+     *
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__destroy
      * @return {Void}
@@ -153,7 +157,7 @@ NEJ.define([
     };
     /**
      * 输入内容变化触发事件
-     * 
+     *
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__onInput
      * @return {Void}
@@ -172,7 +176,7 @@ NEJ.define([
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__doUpdateValue
      * @param  {Object} arg0 - 值信息
-     * @return {Void} 
+     * @return {Void}
      */
     _pro.__doUpdateValue = function(_value){
         // lock onchange for input value setting
@@ -191,18 +195,22 @@ NEJ.define([
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__onSelect
      * @param  {Object} arg0 - 事件信息
-     * @return {Void} 
+     * @return {Void}
      */
     _pro.__onSelect = function(_event){
         var _value = _e._$dataset(_event.target,'value')||'';
         this.__doUpdateValue(_value);
         _value = _value||this.__input.value;
         this._$update('');
-        this._$dispatchEvent('onselect',_value);
+        this._$dispatchEvent('onselect',_value,{
+            target:_event.target,
+            enter:_event.enter,
+            value:_value
+        });
     };
     /**
      * 建议卡片选择变化事件
-     * 
+     *
      * @protected
      * @method module:util/suggest/suggest._$$Suggest#__onSelectionChange
      * @param  {Object} Object 事件信息
@@ -217,14 +225,14 @@ NEJ.define([
     };
     /**
      * 设置列表，用于切换列表选择卡片是否可见，不建议使用
-     * 
+     *
      * 脚本举例
      * ```javascript
      * // _list是节点列表
      * _suggest._$setList(_list);
      * ```
      *
-     * @deprecated 
+     * @deprecated
      * @method module:util/suggest/suggest._$$Suggest#_$setList
      * @see    module:util/suggest/suggest._$$Suggest#_$visibile
      * @param  {Array} arg0 - 建议项节点列表
@@ -235,7 +243,7 @@ NEJ.define([
     };
     /**
      * 更新建议列表的可见性
-     * 
+     *
      * 脚本举例
      * ```javascript
      * // 设置选择列表可见
@@ -251,10 +259,13 @@ NEJ.define([
     _pro._$visibile = function(_visible){
         var _visible = !_visible?'hidden':'visible';
         this.__sopt.parent.style.visibility = _visible;
+        if (_visible==='hidden'){
+            this.__sopt.parent.innerHTML = '';
+        }
     };
     /**
      * 更新可选列表
-     * 
+     *
      * 脚本举例
      * ```javascript
      * // 更新选择列表内容
@@ -264,7 +275,7 @@ NEJ.define([
      * }
      * _suggest._$update(_arr.join(''));
      * ```
-     * 
+     *
      * @method module:util/suggest/suggest._$$Suggest#_$update
      * @param  {String} arg0 - 列表HTML代码
      * @return {Void}

@@ -1,4 +1,3 @@
-
 /*
  * --------------------------------------------
  * 原生对象扩展接口
@@ -31,18 +30,21 @@ NEJ.define(function(_p,_o,_f,_r){
      * --------------------------------------------
      * 以下代码需要在 NEJ 版本升级后 人为添加
      */
-    /**
-     * 禁用 DEBUG 代码
+    // DEBUG default false
+    if (typeof DEBUG === 'undefined') {
+        window.DEBUG = 0;
+    }
+
+    // 禁用兼容模式
+    if (typeof CMPT === 'undefined') {
+        window.CMPT = false;
+    }
+
+    /*
+     * --------------------------------------------
+     * 以上代码需要在 NEJ 版本升级后 人为添加
      */
-    window.DEBUG = 0;
-    /**
-     * 禁用兼容模式
-     */
-    window.CMPT = !0;
-    /**
-     * NEJ 的命名空间
-     */
-    window.NEJ = {};
+
 
     var _extpro = Function.prototype;
     /**
@@ -78,7 +80,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *
      *  ```javascript
      *  var scope = {a:0};
-     *
+     * 
      *  var func = function(a,b){
      *      // 第一个参数 ：1
      *      console.log(a);
@@ -87,7 +89,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *      // 当前this.a ： 0
      *      console.log(this.a);
      *  };
-     *
+     * 
      *  func._$bind(scope,"1")(2);
      *  ```
      *
@@ -114,7 +116,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *
      *  ```javascript
      *  var scope = {a:0};
-     *
+     * 
      *  var func = function(a,b){
      *      // 第一个参数 ：2
      *      console.log(a);
@@ -123,7 +125,7 @@ NEJ.define(function(_p,_o,_f,_r){
      *      // 当前this.a ： 0
      *      console.log(this.a);
      *  };
-     *
+     * 
      *  func._$bind(scope,"1")(2);
      *  ```
      *
@@ -188,11 +190,9 @@ NEJ.define(function(_p,_o,_f,_r){
                 }
             }
         );
-
+        
         return NEJ;
     }
 
     return _p;
 });
-
-

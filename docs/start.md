@@ -4,34 +4,34 @@
 $ nice [-c nice.config.js]
 ```
 
-### src@String (必须)
+### config.src@String (必须)
 要扫描的路径
 
 
-### dist@String (必须)
+### config.dist@String (必须)
 输出的位置
 
 
-### mode@String (可选)
+### config.mode@String (可选)
 可选属性: "1", "2"
 1. ES5(Default)
 2. ES6 
 
-### alias@Object (可选)
+### config.alias@Object (可选)
 ```javascript
 alias: {
     lib: path.resolve('./nej-nej')
 }
 ```
-会把 lib => 输出成对应的绝对路径
+当识别到依赖路径中有 `lib` 字段时，将转换成真实路径 path.resolve('./nej-nej')
 
-### outputAlias@Object (可选)
+### config.outputAlias@Object (可选)
 ```javascript
 outputAlias: {
-    lib: path.resolve('./nej-nej')
+    nej: path.resolve('./nej-nej')
 }
 ```
-考虑到后期使用 Webpack ，可以有路径别名，此处操作是让依赖处理可以有别名操作。
+当识别到 依赖路径中有 `path.resolve('./nej-nej')` 出现时，将转换成 别名 `nej`，意图使输出代码兼容 Webpack 别名
 
-### ext@Array<String> (可选)
+### config.ext@Array<String> (可选)
 支持处理的扩展名，默认 ['.js']

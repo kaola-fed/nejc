@@ -1,3 +1,5 @@
+require('./Pipe');
+
 var Transform = require('../../src/transform').default;
 var expect = require('chai').expect;
 var cwd = process.cwd();

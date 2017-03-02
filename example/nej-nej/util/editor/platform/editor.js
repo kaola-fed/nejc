@@ -6,8 +6,9 @@
  * ------------------------------------------
  */
 NEJ.define([
-    'base/element'
-],function(_e,_p,_o,_f,_r){
+    'base/element',
+    'base/platform'
+],function(_e,_m,_p,_o,_f,_r){
     var __empty    = /(?:<(p|div)>(?:\&nbsp\;|<br\/?>)<\/\1>|<br\/?>|\&nbsp\;|\s)+$/gi, // empty content
         __reg_cls0 = /(?:class|lang)="(mso)?[^"]*"/gi,
         __reg_cls1 = /(?:class|lang)='(mso)?[^']*'/gi,
@@ -59,8 +60,9 @@ NEJ.define([
         var _selection = _p.__getSelection(_window);
         if (!_selection)
             return null;
-        if (!!_selection.getRangeAt)
+        if (!!_selection.getRangeAt){
             return _selection.getRangeAt(0);
+        }
         if (!!_selection.createRange)
             return _selection.createRange();
         return null;
@@ -132,6 +134,14 @@ NEJ.define([
         // do nothing
     };
     /**
+     * FF支持selectionchange
+     * @param  {[type]} _document [description]
+     * @return {[type]}           [description]
+     */
+    _p.__supportSelectionChange = function(_document){
+        // do nothing
+    };
+    /**
      * 移动光标至节点的指定位置
      * @param  {Node}   _node     节点
      * @param  {Number} _position 位置，0-末尾、1-起始
@@ -142,10 +152,11 @@ NEJ.define([
                     ,function(){return 0;}];
         return function(_node,_position){
             var _func = _fmap[_position];
-            if (!_func) return;
-            _p.__getSelection(
-            _p.__getWindow(_node))
-              .collapse(_node,_func(_node));
+            if (!_func){
+                return;
+            }
+            _p.__getSelection(_p.__getWindow(_node))
+            .collapse(_node,_func(_node));
         };
     })();
     /**
@@ -183,10 +194,15 @@ NEJ.define([
      * 内容初步过滤
      * @param {Object} _html
      */
-    _p.__filterContent = function(_html){
-        var _html = (_html||'').replace(__empty,'').replace(__reg_cls0,'').replace(__reg_cls1,'').replace(__reg_cls2,'').replace(__reg_ccm,'');
-        _html = !_p.__filterContentPath?_html:_p.__filterContentPath(_html);
-        return _html;
+    _p.__filterContent = function(_html,_keepClass){
+        var _filterHTML;
+        if (_keepClass){
+            _filterHTML = (_html||'').replace(__empty,'').replace(__reg_ccm,'');
+        }else{
+            _filterHTML = (_html||'').replace(__empty,'').replace(__reg_cls0,'').replace(__reg_cls1,'').replace(__reg_cls2,'').replace(__reg_ccm,'');
+        }
+        _filterHTML = !_p.__filterContentPath?_filterHTML:_p.__filterContentPath(_filterHTML);
+        return _filterHTML;
     };
 
     /**

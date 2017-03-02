@@ -46,7 +46,7 @@ class App {
             if (file.isNull())
                 return cb(null, file);
             if (file.isStream())
-                return cb(new PluginError('nice', 'Streaming not supported'));
+                return cb(new PluginError('nejc', 'Streaming not supported'));
 
             const options = {
                 file: file.path,
@@ -85,6 +85,7 @@ class App {
 
                 let content = new Transform(Object.assign(options, {
                     alias: (this.outputAlias || this.alias),
+                    features: this.features
                 })).transform(map);
 
                 file.contents = new Buffer([firstCode, content].join(''));
@@ -92,7 +93,7 @@ class App {
 
                 cb(null, file);
             } catch (err) {
-                cb(new PluginError('nice', err));
+                cb(new PluginError('nejc', err));
             }
         });
     }

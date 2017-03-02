@@ -1,4 +1,5 @@
 import HasReturnStatement from '../analysis/hasReturnStatement';
+import Pipeable from './Pipeable'
 
 class Compiler {
     constructor(input, ap, depStr) {
@@ -9,30 +10,32 @@ class Compiler {
 
     compile(file) {
         this.file = file;
-        this
-            .reduceWrapFunction()
-            .reduceReturnStatement();
+        const pipeable = new Pipeable(this.result);
 
-        return this.result;
+        pipeable.pipe(
+            this.reduceWrapFunction.bind(this)
+        ).pipe(
+            this.reduceReturnStatement.bind(this)
+        );
+        return pipeable;
     }
 
-    reduceWrapFunction() {
-        this.result = this.result.replace(
+    reduceWrapFunction(result) {
+        return result.replace(
             /^\s*function\s*\([^)]*\)\s*\{/, [
-                '/** Module Export Wrapper **/ function EXP () {',
+                '/** NejC Transform Module Wrapper **/ function EXP () {',
                 /**
                  * Hack ES5 Inner Function Dependency
                  */
                 this.depStr || ''
-            ].join('\n')) ;
-        return this;
+            ].join('\n'));
     }
 
-    reduceReturnStatement() {
+    reduceReturnStatement(result) {
         if (this.ap) {
-            const hasReturnStatement = new HasReturnStatement(this.result).compile();
+            const hasReturnStatement = new HasReturnStatement(result).compile();
             if (!hasReturnStatement) {
-                this.result = this.result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
+                result = result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
             } else {
 
             }
@@ -42,7 +45,7 @@ class Compiler {
          * Hack Windows Sep
          * @type {*}
          */
-        const file = this.file.replace(/\\/g,'//');
+        const file = this.file.replace(/\\/g, '//');
 
         /**
          * Hack NEJ Circle Dependencies
@@ -50,12 +53,12 @@ class Compiler {
          */
         if (~file.indexOf('base/element.js')
             || ~file.indexOf('base/event.js')) {
-            this.result = this.result + '\n\nmodule.exports.__proto__ = EXP.call(window);\n';
+            result = result + '\n\nmodule.exports.__proto__ = EXP.call(window);\n';
         } else {
-            this.result = this.result + '\n\nmodule.exports = EXP.call(window);\n';
+            result = result + '\n\nmodule.exports = EXP.call(window);\n';
         }
-        return this;
+        return result;
     }
 }
 
-module.exports = Compiler;
+export default Compiler;

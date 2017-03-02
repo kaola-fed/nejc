@@ -228,22 +228,6 @@ NEJ.define([
         return this.__index;
     };
     /**
-     * 设置当前选中项索引
-     *
-     * ```javascript
-     *   // 设置当前选中的索引
-     *   _tab._$setIndex(index);
-     * ```
-     *
-     * @method module:util/tab/tab._$$Tab#_$setIndex
-     * @param  {Number}  arg0 - 索引值
-     * @return {Void}
-     */
-    _pro._$setIndex = function(index){
-        this.__index  = index;
-    };
-
-    /**
      * 取Tab控件关联的节点列表
      *
      * ```javascript

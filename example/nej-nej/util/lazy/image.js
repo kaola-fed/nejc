@@ -45,7 +45,6 @@ NEJ.define([
      * @return {Void}
      */
     _pro.__getResourceList = function(_parent){
-//        console.log(+new Date);
         return _parent.getElementsByTagName('img');
     };
     /**
@@ -57,7 +56,7 @@ NEJ.define([
      * @param  {Object} arg1 - 滚动容器节点
      * @return {Number}        操作标识，-1 - 移除，0 - 不做处理， 1 - 追加到页面
      */
-    _pro.__doCheckResource = function(_target,_parent){        
+    _pro.__doCheckResource = function(_target,_parent){
         var _ch = _parent.clientHeight,
             _top = _e._$offset(_target,_parent).y-_parent.scrollTop,
             _bottom = _top+_target.offsetHeight,

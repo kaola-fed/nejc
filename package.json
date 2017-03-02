@@ -1,10 +1,15 @@
 {
-  "name": "nice",
+  "name": "nejc",
   "version": "1.0.0",
   "description": "nej => commonjs",
   "main": "index.js",
+  "files": [
+    "dist",
+    "cli",
+    "index.js"
+  ],
   "bin": {
-    "nce": "cli/nice"
+    "nejc": "cli/nejc"
   },
   "directories": {
     "example": "example"

@@ -243,7 +243,7 @@ NEJ.define([
          * // 1. 直接扩展
          * $._$implement("_$hello", function(){
          *     // 遍历容器内的所有节点
-         *     this.forEach_$(function(_node, _index){
+         *     this._$forEach(function(_node, _index){
          *         _node.hello = "Hello World"
          *     })
          * })

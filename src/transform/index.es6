@@ -50,38 +50,57 @@ export default class Transform {
          * }
          * export default EXP.call(window);
          */
-        const body = jsBeatify(new Compiler(functionBody, autoReturnArg, (this.mode === 1)? depStr : null).compile(this.file));
-        return Transform.lebab(this.mode, $render((this.mode === 1)? '' : depStr, body));
+        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1)? depStr : null).compile(this.file)
+        compiler.pipe(jsBeatify);
+        return Transform.lebab(this.mode, $render((this.mode === 1)? '' : depStr, compiler.getResult()), map);
     }
 
-    static lebab(mode, content) {
+    /**
+     * 输出 lebab
+     * @param mode
+     * @param content
+     * @param map
+        * @property n
+     * @returns {*}
+     */
+    static lebab(mode, content, {n}) {
         if (mode === 2) {
-            const result = lebab.transform(content, ['commonjs', /**'obj-shorthand', 'template', 'default-param', 'includes'**/]);
+            const result = lebab.transform(content, ['commonjs'].concat(this.features || []));
             if (result.warnings.length > 0) {
-                console.log(result.warnings);
+                console.warn(`Warning:`);
+                console.warn(`${n} transform ES6 Failed`);
+                console.warn(result.warnings);
             }
             return result.code;
         }
         return content
     }
-
+    /**
+     * 替换依赖别名
+     * @param map
+         * @property d
+         * @property n
+     * @param args
+     * @returns {string}
+     */
     getVariable({d, n}, args){
         const deps = d;
         const parent = path.parse(n).dir;
         const importDeps = this.reduceDeps(deps, parent);
-        const depMap = args.map((item, idx) => {
-            return {
-                name: item,
-                uri: importDeps[idx] || function () {
-                    return "{}";
-                }
-            }
-        });
         const variable = 'var';
 
-        return depMap.map(item => {
+        const replaceImportAplias = (item, idx) => ({
+            name: item,
+            uri: importDeps[idx] || function () {
+                return "{}";
+            }
+        });
+
+        const getVariableDefine = item => {
             return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
-        }).join('\n');
+        };
+
+        return args.map(replaceImportAplias).map(getVariableDefine).join('\n');
     }
 
     /**
@@ -136,8 +155,6 @@ export default class Transform {
             return p;
         });
 
-        returnDeps.push(_o, _o, _f, _r);
-
-        return returnDeps;
+        return [...returnDeps, _o, _o, _f, _r];
     }
 }

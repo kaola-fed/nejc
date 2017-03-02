@@ -35,10 +35,10 @@ NEJ.define([
      * @method module:util/dispatcher/module._$$ModuleAbstract#__init
      * @return {Void}
      */
-    _pro.__init = function(){
-        this.__super();
+    _pro.__init = function(_options){
+        this.__super(_options);
         this.__export = {};
-        this.__doBuild();
+        this.__doBuild(_options.config);
     };
     /**
      * 控件重置
@@ -381,6 +381,7 @@ NEJ.define([
     
     if (CMPT){
         NEJ.P('nej.e')._$regist = _p._$regist;
+        NEJ.P('nej.ut')._$$Module = _p._$$ModuleAbstract;
         NEJ.P('nej.ut')._$$AbstractModule = _p._$$ModuleAbstract;
     }
     

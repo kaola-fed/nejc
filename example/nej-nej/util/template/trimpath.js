@@ -1,19 +1,19 @@
 /*
  * TrimPath Template. Release 1.1.2.
  * Copyright (C) 2004 - 2007 TrimPath.
- *
+ * 
  * TrimPath Template is licensed under the GNU General Public License
  * and the Apache License, Version 2.0, as follows:
  *
- * This program is free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or 
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
- * This program is distributed WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * This program is distributed WITHOUT ANY WARRANTY; without even the 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
  * See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -21,9 +21,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,9 @@
     // init TrimPath
     if (typeof TrimPath==='undefined'){
         var TrimPath = {};
-        window.TrimPath = TrimPath;
-        // if (typeof exports!=='undefined')
-        //     TrimPath = exports;
+        window.trimPath = TrimPath;
+        if (typeof exports!=='undefined')
+            TrimPath = exports;
     }
     // variable declaration
     var _tcache = {}, // jst string cache
@@ -90,7 +90,7 @@
         return function(_content){
             _content = _content||'';
             // for string/array
-            if (!_content||_reg0.test(_content))
+            if (!_content||_reg0.test(_content)) 
                 return;
             var _arr = _content.split(_reg1);
             for(var i=0,l=_arr.length;i<l;i++)
@@ -178,7 +178,7 @@
      * @return {String} 解析后的前缀值
      */
     var _doParsePrefixInline = function(_part){
-        if (!_part[1])
+        if (!_part[1]) 
             throw 'bad include statement: '+_part.join(' ');
         return 'if (typeof inline == "function"){__OUT.push(inline(';
     };
@@ -309,7 +309,7 @@
             if (!!_trim){
                 _line = _line.trim();
                 if (!_line) continue;
-            }
+            } 
             _doParseSectionTextLine(_line,_out);
             if (!!_trim&&i<l-1) _out.push('__OUT.push(\'\\n\');');
         }
@@ -454,10 +454,10 @@
                 _prvend = _stmtend;
             }
             _doParseSectionText(_content.substring(_prvend+1),_ftxt);
-            _ftxt.push(';return __OUT.join("");');
+            _ftxt.push(';return __OUT.join("");'); 
             _ftxt[1] = _doParseVarMap(_vars);
             _vars = null;
-//            console.log(_ftxt.join(''));
+            //console.log(_ftxt.join(''));
             return new Function('__CTX','__MDF',_ftxt.join(''));
         };
     })();
@@ -474,7 +474,7 @@
      *     var _seed = TrimPath.seed();
      * });
      * ```
-     *
+     * 
      * @method TrimPath.seed
      * @return {String} 随机数种子
      */
@@ -483,7 +483,7 @@
     };
     /**
      * 根据模板的序列号合并模板数据
-     *
+     * 
      * 代码举例
      * ```javascript
      * NEJ.define([
@@ -563,7 +563,12 @@
         var _xeed = +new Date;
         return function(_content,_sn){
             if (!_content) return '';
-            _sn = _sn||('ck_'+(_xeed++));
+            _sn = _sn||('ck-'+(_xeed++));
+            if (_tcache[_sn]!=null){
+                console.warn('jst template overwrited with key '+_sn);
+                console.debug('old template content: '+_tcache[_sn].replace(/\n/g,' '));
+                console.debug('new template content: '+_content.replace(/\n/g,' '));
+            }
             _tcache[_sn] = _content;
             return _sn;
         };
