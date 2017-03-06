@@ -38,9 +38,9 @@ describe('libs', function () {
         var deps = new Transform({
             libs: ['regularjs']
         }).reduceDeps([
-            'regularjs'
+            'regularjs/index.js'
         ], 'xxxx');
-        expect(deps[0]).to.be.equal('regularjs');
+        expect(deps[0]).to.be.equal('regularjs/index.js');
     });
 });
 

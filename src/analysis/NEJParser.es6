@@ -1,4 +1,6 @@
 import path from 'path';
+import {isInLibs} from '../tookit/tookit';
+
 const _g = global;
 
 const _isTypeOf = function (_data, _type) {
@@ -183,7 +185,7 @@ class NEJParser {
         this.result = {
             n: _uri, d: _deps.map((dep) => {
                 // libs 里面 不处理
-                if (~_libs.indexOf(dep)) {
+                if (isInLibs(_libs, dep)) {
                     return dep;
                 }
                 const _arr = _doParsePlugin(dep);

@@ -4,6 +4,7 @@ import {js_beautify} from 'js-beautify';
 import Compiler from './compiler';
 import lebab from 'lebab';
 const jsBeatify = str => js_beautify(str, {indent_size: 4});
+import {isInLibs} from '../tookit/tookit';
 
 const $render = function (depStr, fn) {
     return `${depStr}
@@ -184,7 +185,7 @@ export default class Transform {
 
         const returnDeps = deps.map((item) => {
             // libs内的不处理
-            if (~_libs.indexOf(item)) {
+            if (isInLibs(_libs, item)) {
                 return item;
             }
             const p = path

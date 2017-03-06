@@ -142,8 +142,6 @@ describe('demo', function () {
         expect(JSON.stringify(res.d)).to.be.equal('[]');
         expect(res.f.toString()).to.be.equal('function (){}');
     });
-
-
 });
 
 describe('libs', function () {
@@ -152,7 +150,8 @@ describe('libs', function () {
             libs: ['regularjs']
         });
         analysis.file = './test.js';
-        var res = analysis.analysis(`define(['regularjs'], function(){});`);
-        console.log(res)
+        var res = analysis.analysis(`define(['regularjs/index.js'], function(){});`);
+
+        expect(res.d[0]).to.be.equal('regularjs/index.js');
     });
 });
