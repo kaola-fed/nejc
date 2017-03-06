@@ -17,6 +17,7 @@ class App {
      *      @property ext
      *      @property outputAlias
      *      @property syntax
+     *      @property replaceArgs
      */
     constructor(opt) {
         Object.assign(this, {
@@ -29,6 +30,8 @@ class App {
         this.alias.sort((before, after) => {
             return before.value.length <= after.value.length
         });
+
+        this.replaceArgs = this.replaceArgs || {};
     }
 
     static reduceAlias(map = {}) {
@@ -51,7 +54,8 @@ class App {
             const options = {
                 file: file.path,
                 alias: this.alias,
-                mode: (typeof this.mode === 'undefined')? 1: this.mode
+                mode: (typeof this.mode === 'undefined')? 1: this.mode,
+                replaceArgs: this.replaceArgs
             };
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
@@ -82,7 +86,6 @@ class App {
                 if (-1 === map) {
                     return cb(null, file);
                 }
-
                 let content = new Transform(Object.assign(options, {
                     alias: (this.outputAlias || this.alias),
                     features: this.features

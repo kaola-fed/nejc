@@ -23,7 +23,7 @@ class Compiler {
     reduceWrapFunction(result) {
         return result.replace(
             /^\s*function\s*\([^)]*\)\s*\{/, [
-                '/** NejC Transform Module Wrapper **/ function EXP () {',
+                '/** NejC Transform Module Wrapper **/ function module_exports () {',
                 /**
                  * Hack ES5 Inner Function Dependency
                  */

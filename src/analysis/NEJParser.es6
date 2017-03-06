@@ -179,7 +179,8 @@ class NEJParser {
                 const _arr = _doParsePlugin(dep);
                 return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
             }),
-            f: _callback.toString()
+            f: _callback.toString(),
+            sourceDeps: _deps
         };
         return this.result;
     }

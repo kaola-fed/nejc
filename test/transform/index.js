@@ -34,7 +34,7 @@ describe('依赖转换', function () {
 });
 
 
-describe('自动补齐 return ', function () {
+describe('自动补齐 return', function () {
 
     it('没有 return ，要加 ', function () {
         var res = new Transform({
@@ -60,5 +60,43 @@ describe('自动补齐 return ', function () {
             f: 'function(pro){return pro}'
         });
         expect(res.match(/return/g).length).to.be.equal(1);
+    });
+});
+
+describe('mergeArgs', function () {
+    it('替换变量', function () {
+        var res = Transform.mergeArgs(
+            [
+                'regularjs'
+            ],
+            [
+                '/node_modules/regularjs'
+            ],
+            [
+                'R'
+            ],
+            {
+                'regularjs': 'Regular'
+            }
+        );
+        expect(res.args[0] === 'Regular').to.be.equal(!!1);
+    });
+
+    it('删除多余', function () {
+        var res = Transform.mergeArgs(
+            [
+                'NULL'
+            ],
+            [
+                'NUL121L'
+            ],
+            [
+                'R'
+            ],
+            {
+                'regularjs': 'Regular'
+            }
+        );
+        expect((res.args.length === 0) && (res.deps.length === 0)).to.be.equal(true);
     });
 });

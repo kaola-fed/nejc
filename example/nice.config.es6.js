@@ -12,5 +12,8 @@ module.exports = {
     },
     'outputAlias': {},
     'mode': 2,
+    'replaceArgs': {
+        'base/util': 'UTIL'
+    }
     // 'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var']
 };

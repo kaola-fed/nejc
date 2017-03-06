@@ -26,9 +26,15 @@ export default class Transform {
             return '';
         }
 
-        const deps = map.d || [];
+        let sourceDeps = map.sourceDeps || [];
         const functionBody = map.f;
-        const args = Transform.getArgs(functionBody);
+
+        let {deps, args} = Transform.mergeArgs(
+            sourceDeps,
+            (map.d || []),
+            Transform.getArgs(functionBody),
+            this.replaceArgs);
+
         const autoReturnArg = args[deps.length];
         const depStr = this.getVariable(map, args);
         /**
@@ -50,9 +56,48 @@ export default class Transform {
          * }
          * export default EXP.call(window);
          */
-        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1)? depStr : null).compile(this.file)
+        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1) ? depStr : null).compile(this.file)
         compiler.pipe(jsBeatify);
-        return Transform.lebab(this.mode, $render((this.mode === 1)? '' : depStr, compiler.getResult()), map);
+        return Transform.lebab(this.mode, $render((this.mode === 1) ? '' : depStr, compiler.getResult()), map, this.features);
+    }
+
+    /**
+     * update Args
+     * @param sourceDeps
+     * @param deps
+     * @param args
+     * @param replaceArgs
+     */
+    static mergeArgs(sourceDeps, deps, args, replaceArgs = {}) {
+        const replaceDepList = Object.keys(replaceArgs);
+
+        // clone
+        deps = [...deps];
+        // clone
+        args = [...args];
+
+        sourceDeps.forEach((item, i) => {
+            const idx = replaceDepList.indexOf(item);
+            if (~idx) {
+                args[i] = replaceArgs[replaceDepList[idx]];
+            }
+            // Remove item
+            if (item === 'NULL') {
+                deps[i] = null;
+                args[i] = null;
+            }
+        });
+
+        const deleteNull = (list) => {
+            return list.filter(item => {
+                return item !== null;
+            })
+        };
+
+        return {
+            deps: deleteNull(deps),
+            args: deleteNull(args)
+        }
     }
 
     /**
@@ -60,12 +105,12 @@ export default class Transform {
      * @param mode
      * @param content
      * @param map
-        * @property n
+     * @property n
      * @returns {*}
      */
-    static lebab(mode, content, {n}) {
+    static lebab(mode, content, {n}, features) {
         if (mode === 2) {
-            const result = lebab.transform(content, ['commonjs'].concat(this.features || []));
+            const result = lebab.transform(content, ['commonjs'].concat(features || []));
             if (result.warnings.length > 0) {
                 console.warn(`Warning:`);
                 console.warn(`${n} transform ES6 Failed`);
@@ -75,15 +120,16 @@ export default class Transform {
         }
         return content
     }
+
     /**
      * 替换依赖别名
      * @param map
-         * @property d
-         * @property n
+     * @property d
+     * @property n
      * @param args
      * @returns {string}
      */
-    getVariable({d, n}, args){
+    getVariable({d, n}, args) {
         const deps = d;
         const parent = path.parse(n).dir;
         const importDeps = this.reduceDeps(deps, parent);
