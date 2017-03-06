@@ -180,8 +180,13 @@ export default class Transform {
             _f = function () {
                 return 'function(){return !1;}'
             };
+        const _libs = (this.libs || []);
 
         const returnDeps = deps.map((item) => {
+            // libs内的不处理
+            if (~_libs.indexOf(item)) {
+                return item;
+            }
             const p = path
                 .relative(parent, item)
                 .replace(/\.js$/ig, '')

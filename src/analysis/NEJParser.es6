@@ -131,12 +131,13 @@ const _doFormatURI = (function () {
 })();
 
 class NEJParser {
-    constructor({alias = [], uri = ''}) {
+    constructor({alias = [], uri = '', libs = []}) {
         this._config = {
             root: {}
         };
         this._setAlias(alias);
         this._setCurrentFile(uri);
+        this._setLibs(libs);
     }
 
     define(_uri, _deps, _callback) {
@@ -150,6 +151,10 @@ class NEJParser {
 
     _getCurrentFile() {
         return this.currentFile || '';
+    }
+
+    _setLibs(libs) {
+        this.libs = libs;
     }
 
     _setAlias(alias) {
@@ -169,6 +174,7 @@ class NEJParser {
         const _args = _doFormatARG.apply(
             _g, arguments
         );
+        const _libs = this.libs;
         _uri = this._getCurrentFile();
         _deps = _args[1] || [];
         _callback = _args[2] || function () {
@@ -176,6 +182,10 @@ class NEJParser {
             };
         this.result = {
             n: _uri, d: _deps.map((dep) => {
+                // libs 里面 不处理
+                if (~_libs.indexOf(dep)) {
+                    return dep;
+                }
                 const _arr = _doParsePlugin(dep);
                 return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
             }),

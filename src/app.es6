@@ -20,19 +20,22 @@ class App {
      *      @property replaceArgs
      */
     constructor(opt) {
+        opt.alias = opt.alias || {};
+        opt.outputAlias = opt.outputAlias || {};
+        opt.libs = opt.libs || [];
+        opt.replaceArgs = opt.replaceArgs || {};
+        opt.plugins = opt.plugins || [];
+
         Object.assign(this, {
             ext: ['.js']
         }, opt);
 
-        this.alias = App.reduceAlias(App.mergeLibs(opt.alias, this.libs));
-        this.outputAlias = App.reduceAlias(App.mergeLibs(opt.outputAlias, this.libs));
+        this.alias = App.reduceAlias(opt.alias);
+        this.outputAlias = App.reduceAlias(opt.outputAlias);
 
         this.alias.sort((before, after) => {
             return before.value.length <= after.value.length
         });
-
-        this.replaceArgs = this.replaceArgs || {};
-        this.plugins = this.plugins || [];
     }
 
     static mergeLibs(alias, libs = []) {
@@ -59,11 +62,12 @@ class App {
                 return cb(new PluginError('nejc', 'Streaming not supported'));
 
             const options = {
-                file: file.path,
-                alias: this.alias,
-                mode: (typeof this.mode === 'undefined') ? 1 : this.mode,
+                file:        file.path,
+                alias:       this.alias,
+                mode:        (typeof this.mode === 'undefined') ? 1 : this.mode,
                 replaceArgs: this.replaceArgs,
-                plugins: this.plugins
+                plugins:     this.plugins,
+                libs:        this.libs
             };
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);

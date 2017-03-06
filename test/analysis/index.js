@@ -124,6 +124,11 @@ describe('插件分析', function () {
         var res = new NEJParser({}).doParsePlugin('json!index.json');
         expect(res[1] + '!' + res[0]).to.be.equal('json!index.json');
     });
+
+    it('插件分析3', function () {
+        var res = new NEJParser({}).doParsePlugin('regularjs');
+        expect(res[0]).to.be.equal('regularjs');
+    });
 });
 
 describe('demo', function () {
@@ -136,5 +141,18 @@ describe('demo', function () {
         expect(res.n).to.be.equal('./test.js');
         expect(JSON.stringify(res.d)).to.be.equal('[]');
         expect(res.f.toString()).to.be.equal('function (){}');
+    });
+
+
+});
+
+describe('libs', function () {
+    it('libs', function () {
+        var analysis = new Analysis.default({
+            libs: ['regularjs']
+        });
+        analysis.file = './test.js';
+        var res = analysis.analysis(`define(['regularjs'], function(){});`);
+        console.log(res)
     });
 });

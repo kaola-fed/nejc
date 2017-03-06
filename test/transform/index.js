@@ -33,6 +33,17 @@ describe('依赖转换', function () {
     });
 });
 
+describe('libs', function () {
+    it('libs', function () {
+        var deps = new Transform({
+            libs: ['regularjs']
+        }).reduceDeps([
+            'regularjs'
+        ], 'xxxx');
+        expect(deps[0]).to.be.equal('regularjs');
+    });
+});
+
 
 describe('自动补齐 return', function () {
 
