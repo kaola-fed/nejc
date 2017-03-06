@@ -4,3 +4,5 @@
 require('./analysis');
 require('./compiler');
 require('./transform');
+require('./app');
+

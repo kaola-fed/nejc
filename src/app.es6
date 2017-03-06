@@ -24,8 +24,8 @@ class App {
             ext: ['.js']
         }, opt);
 
-        this.alias = App.reduceAlias(opt.alias);
-        this.outputAlias = App.reduceAlias(opt.outputAlias);
+        this.alias = App.reduceAlias(App.mergeLibs(opt.alias, this.libs));
+        this.outputAlias = App.reduceAlias(App.mergeLibs(opt.outputAlias, this.libs));
 
         this.alias.sort((before, after) => {
             return before.value.length <= after.value.length
@@ -33,12 +33,17 @@ class App {
 
         this.replaceArgs = this.replaceArgs || {};
         this.plugins = this.plugins || [];
+    }
 
+    static mergeLibs(alias, libs = []) {
+        return Object.assign(alias, libs.reduce((prev, item) => Object.assign(prev, {
+            [item]: `/excludelibs/${item}/`
+        }), {}));
     }
 
     static reduceAlias(map = {}) {
         let keys = Object.keys(map);
-        return  keys.map(key => {
+        return keys.map(key => {
             return {
                 key,
                 value: map[key]
@@ -56,7 +61,7 @@ class App {
             const options = {
                 file: file.path,
                 alias: this.alias,
-                mode: (typeof this.mode === 'undefined')? 1: this.mode,
+                mode: (typeof this.mode === 'undefined') ? 1 : this.mode,
                 replaceArgs: this.replaceArgs,
                 plugins: this.plugins
             };
