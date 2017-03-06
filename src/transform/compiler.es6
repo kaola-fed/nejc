@@ -53,9 +53,9 @@ class Compiler {
          */
         if (~file.indexOf('base/element.js')
             || ~file.indexOf('base/event.js')) {
-            result = result + '\n\nmodule.exports.__proto__ = EXP.call(window);\n';
+            result = result + '\n\nmodule.exports.__proto__ = module_exports.call(window);\n';
         } else {
-            result = result + '\n\nmodule.exports = EXP.call(window);\n';
+            result = result + '\n\nmodule.exports = module_exports.call(window);\n';
         }
         return result;
     }

@@ -112,6 +112,16 @@ describe('传参分析', function () {
         expect(res[2]).to.be.equal(temp);
     });
 
+    it('依赖比传参多', function () {
+        var res = new NEJParser({}).doFormatARG([
+            'regularjs',
+            'html2canvas'
+        ], uri, function (Regular) {
+
+        });
+        expect(res[1].length).to.be.equal(2);
+    })
+
 });
 
 describe('插件分析', function () {

@@ -31,6 +31,26 @@ describe('依赖转换', function () {
         ], '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/pages/h5/index.js');
         expect(deps[0]).to.be.equal('h5lib/helper/util.js');
     });
+
+    it('依赖比传参多', function () {
+        var res = new Transform({
+            file: ''
+        }).transform({
+            d: [
+                'regularjs',
+                'html2canvas'
+            ],
+            sourceDeps: [
+                'regularjs',
+                'html2canvas'
+            ],
+            n: '',
+            f: `function (Regular) {
+    
+            }`,
+        });
+        expect(/html2canvas/g.test(res)).to.be.equal(true)
+    })
 });
 
 describe('libs', function () {
@@ -46,7 +66,6 @@ describe('libs', function () {
 
 
 describe('自动补齐 return', function () {
-
     it('没有 return ，要加 ', function () {
         var res = new Transform({
             alias: alias1,

@@ -3,7 +3,5 @@ export let replaceEmail = (result) => {
 };
 
 export let isInLibs = (libs, item) => {
-    return libs.filter(lib => {
-        return item.startsWith(`${lib}/`);
-    }).length > 0;
+    return libs.filter(lib => ((item === lib) || item.startsWith(`${lib}/`))).length > 0;
 };

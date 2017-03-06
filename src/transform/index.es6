@@ -27,17 +27,20 @@ export default class Transform {
             return '';
         }
 
-        let sourceDeps = map.sourceDeps || [];
+        map.d = map.d || [];
+
+        const sourceDeps = map.sourceDeps || [];
         const functionBody = map.f;
+        const depSize = map.d.length;
 
         let {deps, args} = Transform.mergeArgs(
             sourceDeps,
-            (map.d || []),
+            map.d,
             Transform.getArgs(functionBody),
             this.replaceArgs);
 
         const autoReturnArg = args[deps.length];
-        const depStr = this.getVariable(map, args);
+        const depStr = this.getVariable(map, args, depSize);
         /**
          * @mode 1 -- es5
          * function EXP() {
@@ -57,7 +60,7 @@ export default class Transform {
          * }
          * export default EXP.call(window);
          */
-        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1) ? depStr : null).compile(this.file)
+        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1) ? depStr : null).compile(this.file);
         compiler.pipe(jsBeatify);
         (this.plugins || []).forEach(plugin => compiler.pipe);
         return Transform.lebab(this.mode, $render((this.mode === 1) ? '' : depStr, compiler.getResult()), map, this.features);
@@ -131,7 +134,7 @@ export default class Transform {
      * @param args
      * @returns {string}
      */
-    getVariable({d, n}, args) {
+    getVariable({d, n}, args, depSize) {
         const deps = d;
         const parent = path.parse(n).dir;
         const importDeps = this.reduceDeps(deps, parent);
@@ -147,8 +150,17 @@ export default class Transform {
         const getVariableDefine = item => {
             return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
         };
+        const argsMatchedDeps = args.map(replaceImportAplias).map(getVariableDefine);
 
-        return args.map(replaceImportAplias).map(getVariableDefine).join('\n');
+        // 传参数量比依赖多 -> 注入 p p f r
+        if (args.length >= depSize) {
+            return argsMatchedDeps;
+        }
+
+        // 需要 require
+        return [...argsMatchedDeps, ...importDeps.slice(argsMatchedDeps.length , depSize).map(item => {
+            return `"require(${item}")`
+        })].join('\n');
     }
 
     /**
