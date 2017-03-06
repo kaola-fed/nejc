@@ -100,3 +100,4 @@ describe('mergeArgs', function () {
         expect((res.args.length === 0) && (res.deps.length === 0)).to.be.equal(true);
     });
 });
+

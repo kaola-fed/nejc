@@ -1,5 +1,5 @@
 import HasReturnStatement from '../analysis/hasReturnStatement';
-import Pipeable from './Pipeable'
+import Pipeable from '../tookit/Pipeable';
 
 class Compiler {
     constructor(input, ap, depStr) {

@@ -32,6 +32,8 @@ class App {
         });
 
         this.replaceArgs = this.replaceArgs || {};
+        this.plugins = this.plugins || [];
+
     }
 
     static reduceAlias(map = {}) {
@@ -55,7 +57,8 @@ class App {
                 file: file.path,
                 alias: this.alias,
                 mode: (typeof this.mode === 'undefined')? 1: this.mode,
-                replaceArgs: this.replaceArgs
+                replaceArgs: this.replaceArgs,
+                plugins: this.plugins
             };
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
@@ -86,12 +89,14 @@ class App {
                 if (-1 === map) {
                     return cb(null, file);
                 }
-                let content = new Transform(Object.assign(options, {
+                const content = new Transform(Object.assign(options, {
                     alias: (this.outputAlias || this.alias),
                     features: this.features
                 })).transform(map);
 
-                file.contents = new Buffer([firstCode, content].join(''));
+                file.contents = new Buffer([
+                    firstCode,
+                    content].join(''));
                 file.path = replaceExt(file.path, '.js');
 
                 cb(null, file);
@@ -100,7 +105,6 @@ class App {
             }
         });
     }
-
 }
 
 export default App;

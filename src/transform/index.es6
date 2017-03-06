@@ -58,6 +58,7 @@ export default class Transform {
          */
         const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1) ? depStr : null).compile(this.file)
         compiler.pipe(jsBeatify);
+        (this.plugins || []).forEach(plugin => compiler.pipe);
         return Transform.lebab(this.mode, $render((this.mode === 1) ? '' : depStr, compiler.getResult()), map, this.features);
     }
 
