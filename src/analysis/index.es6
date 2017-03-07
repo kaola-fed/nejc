@@ -19,7 +19,7 @@ export default class Analysis {
         }
 
         try {
-            map = compiler(NEJParser, this.alias, this.file);
+            map = compiler(NEJParser, this.alias, this.file, this.libs);
 
         } catch (err) {
             console.log(`[Warning] 解析失败，输出源码: ${this.file} `);
@@ -31,7 +31,7 @@ export default class Analysis {
 
     static createCompileFunction(source) {
         const fnStr =  `
-            var NEJ = new NEJParser({alias: alias, uri: currentFile});
+            var NEJ = new NEJParser({alias: alias, uri: currentFile, libs: libs});
             var define = NEJ.define.bind(NEJ);
             /**
              * define start
@@ -42,6 +42,6 @@ export default class Analysis {
              */
             return NEJ.getResult();
         `;
-        return new Function('NEJParser', 'alias', 'currentFile',fnStr);
+        return new Function('NEJParser', 'alias', 'currentFile', 'libs', fnStr);
     }
 };

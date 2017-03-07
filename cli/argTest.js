@@ -1,21 +1,18 @@
 /**
  * Created by june on 2017/1/5.
  */
-var path = require('path');
-var argTest = function (option) {
-    var key,value;
-    for(var attr in option.alias){
-        if(!option.alias[attr].startsWith('/')) {
-            key = 'alias[alias.xxx]';
-            value = '绝对路径';
-            break;
-        }
-    }
-    if(key){
-        return {
-            key: key,
-            value: value
-        }
-    }
+const path = require('path');
+const os = require('os');
+
+function absAliasPaths(alias) {
+    Object.keys(alias).forEach(key => {
+        alias[key] = alias[key].split(path.sep).filter(item => !!item).reduce((prev, item) => {
+            return path.resolve(prev, item);
+        }, os.homedir());
+    });
+}
+
+module.exports = function (option) {
+    absAliasPaths(option.alias);
+    absAliasPaths(option.outputAlias);
 };
-module.exports = argTest;

@@ -6,26 +6,63 @@ class HasReturnStatement {
     }
 
     compile() {
-        let len = 0;
+        let size = 0;
+        let loc = {};
         try {
-            jscodeshift(this.input)
-                .find(jscodeshift.ReturnStatement)
+            const node = jscodeshift(this.input);
+            const source = node.toSource();
+            node.find(jscodeshift.ReturnStatement)
                 .forEach((path) => {
-                    if (HasReturnStatement.getRoot(path).name === null) len++;
+                    if (HasReturnStatement.isTopReturn(path)) {
+                        if (!path.value.argument) {
+                            return 0;
+                        }
+                        const arg = path.value.argument.name;
+                        size++;
+                        const start = path.value.start - 50;
+
+                        const result = new RegExp('return\\s+' + arg + '[\s;]').exec(this.input.slice(start, start + 100));
+
+                        // Hack path.value.start 不准
+                        loc = {
+                            start: start + result.index,
+                            end: start + result.index + 7,
+                        }
+                    }
                 });
+
         } catch(err) {
-            console.log(this.input);
+            return {
+                hasReturn: true,
+                size: 2,
+                loc: {}
+            }
         }
-        return len > 0;
+
+        return {
+            hasReturn: size > 0,
+            size,
+            loc
+        };
     }
 
-    static getRoot(path) {
-        return path.parentPath
-            .parentPath
-            .parentPath
-            .parentPath
-            .parentPath
-            .parentPath;
+    static isTopReturn(path) {
+        let node = path;
+        let funcScopeCount = 0;
+
+        while (node.parent) {
+            // 直接跳出
+            if (funcScopeCount > 1) {
+                return false;
+            }
+
+            if (~node.value.type.indexOf('Function')) {
+                funcScopeCount ++;
+            }
+            node = node.parent;
+        }
+
+        return funcScopeCount === 1;
     }
 }
 

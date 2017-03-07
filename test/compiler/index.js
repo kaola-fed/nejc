@@ -1,29 +1,26 @@
-var hasReturnStatement = require('../../src/analysis/hasReturnStatement').default;
+var wrapperFnToModule = require('../../src/transform/wrapperFnToModule').default;
 var expect = require('chai').expect;
-var cwd = process.cwd();
 var path = require('path');
 
+describe('函数 return 数量识别', function () {
 
-
-describe('是否有 return', function () {
-
-    it('无 return', function () {
-        var res = new hasReturnStatement('function moduleExports (){  };').compile();
-        expect(res).to.be.equal(false);
+    it('0', function () {
+        var res = wrapperFnToModule('function moduleExports (){  };');
+        expect(res.type).to.be.equal(0);
     });
 
-    it('有 return', function () {
-        var res = new hasReturnStatement('function moduleExports (){  return 1};').compile();
-        expect(res).to.be.equal(true);
+    it('1', function () {
+        var res = wrapperFnToModule('function moduleExports (){  return 1};');
+        expect(res.type).to.be.equal(1);
     });
 
-    it('无 return', function () {
-        var res = new hasReturnStatement('function moduleExports (){  function a(){return 1}};').compile();
-        expect(res).to.be.equal(false);
+    it('0', function () {
+        var res = wrapperFnToModule('function moduleExports (){  function a(){return 1}};');
+        expect(res.type).to.be.equal(0);
     });
-    it('有 return', function () {
-        var res = new hasReturnStatement('function moduleExports (){  return function a(){return 1}};').compile();
-        expect(res).to.be.equal(true);
+    it('1', function () {
+        var res = wrapperFnToModule('function moduleExports (){  return function a(){return 1}};');
+        expect(res.type).to.be.equal(1);
     });
 
 });

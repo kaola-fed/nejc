@@ -7,46 +7,103 @@
  
 ## 如何体验
 ### 一、CLI 式
-1. 安装 NejC 到全局
+#### Step 1. 安装 NejC 到全局
 ```bash
 $ npm i --global nejc
 ```
 
-2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
+#### Step 2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
 ```bash
 $ cd /path/to/project
 $ touch nejc.config.js # 创建 nejc.config.js
 ```
-3. 执行 nejc，并静静等待
+```javascript 1.8
+module.exports = {
+    'src': 'src/mobileweb-helper',
+    'dist': 'build/node_modules/mobileweb-helper',
+	'ext': ['.js'],
+	'libs': [
+    	'mobileweb-helper',
+        'mobileweb-ui',
+        'mobileweb-mcss',
+
+
+        'regularjs',
+        'iscroll',
+        'hammerjs',
+        'html2canvas'
+    ],
+
+    'replaceArgs': {
+    	'regularjs': 'Regular',
+    	'hammerjs': 'Hammer',
+        'html2canvas': 'html2canvas'
+    },
+    'alias': {
+        'lib': '/node_modules/nej/'
+    },
+    'outputAlias': {
+        'nej-commonjs': '/node_modules/nej/'
+    },
+    'mode': 2,
+    'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var'],
+    'plugins': [
+        function (source) {
+            return source.replace(/\.\_\$bind/g, '.bind');
+        }
+    ]
+}
+```
+#### Step 3. 执行 nejc，并静静等待
 ```bash
 $ nejc
 ```
 
 ### 二、Gulp Plugin 式
-1. 安装 NejC 到工程
+#### Step 1. 安装 NejC 到工程
 ```bash
-$ cd /path/to/project
+$ cd /path/to/projectmochacnpm i
 $ npm i --save nejc
 ```
-2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
+#### Step 2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
 
-3. 配置 `gulpfile.js`
-```javascript
+#### Step 3. 配置 `gulpfile.js`
+```javascript 1.8
 const gulp = require('gulp');
 const nejc = require('../index');
 const path = require('path');
 const config = {
-    'src': 'nej-nej/**/*',
-    'dist': 'nej-commonjs',
-    'ignoreFiles': ['nes'],
     'ext': ['.js'],
-    'alias': {
-        lib: path.resolve('./nej-nej'),
-    },
-    'outputAlias': {},
-    'mode': 1
-};
+    'libs': [
+        'mobileweb-helper',
+        'mobileweb-ui',
+        'mobileweb-mcss',
 
+
+        'regularjs',
+        'iscroll',
+        'hammerjs',
+        'html2canvas'
+    ],
+    'replaceArgs': {
+        'regularjs': 'Regular',
+        'hammerjs': 'Hammer',
+        'html2canvas': 'html2canvas'
+    },
+    'alias': {
+        'lib': '/node_modules/nej/'
+    },
+    'outputAlias': {
+        'nej-commonjs': '/node_modules/nej/'
+    },
+    'mode': 2,
+    'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var'],
+    'plugins': [
+        function (source) {
+            return source.replace(/\.\_\$bind/g, '.bind');
+        }
+    ]
+}
 
 gulp.task('default', function () {
     return gulp
