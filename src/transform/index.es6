@@ -1,16 +1,9 @@
 import path from 'path';
 import {readFileSync} from 'fs';
-import {js_beautify} from 'js-beautify';
-import Compiler from './compiler';
+import compile from './compiler';
 import lebab from 'lebab';
-const jsBeatify = str => js_beautify(str, {indent_size: 4});
-import {isInLibs} from '../tookit/tookit';
+import {isInLibs, render, jsBeatify} from '../tookit/tookit';
 
-const $render = function (depStr, fn) {
-    return `${depStr}
-
-${fn}`;
-};
 
 export default class Transform {
     constructor(opt) {
@@ -31,7 +24,6 @@ export default class Transform {
 
         const sourceDeps = map.sourceDeps || [];
         const functionBody = map.f;
-        const depSize = map.d.length;
 
         let {deps, args} = Transform.mergeArgs(
             sourceDeps,
@@ -40,7 +32,10 @@ export default class Transform {
             this.replaceArgs);
 
         const autoReturnArg = args[deps.length];
-        const depStr = this.getVariable(map, args, depSize);
+        const depStr = this.getVariable({
+            d: deps,
+            n: map.n
+        }, args);
         /**
          * @mode 1 -- es5
          * function EXP() {
@@ -48,7 +43,7 @@ export default class Transform {
          *  var b = require('./b');
          *  return a + b;
          * }
-         * module.export = EXP.call(window);
+         * module.export = EXP.apply(window);
          *
          * @mode 2 -- es6
          * import a from './a';
@@ -58,12 +53,35 @@ export default class Transform {
          *  var b = require('./b');
          *  return a + b;
          * }
-         * export default EXP.call(window);
+         * export default EXP.apply(window);
          */
-        const compiler = new Compiler(functionBody, autoReturnArg, (this.mode === 1) ? depStr : null).compile(this.file);
-        compiler.pipe(jsBeatify);
-        (this.plugins || []).forEach(plugin => compiler.pipe);
-        return Transform.lebab(this.mode, $render((this.mode === 1) ? '' : depStr, compiler.getResult()), map, this.features);
+        const pipeline = compile({
+            input: functionBody,
+            ap: autoReturnArg,
+            depStr: (this.mode === 1) ? depStr : null,
+            file: this.file
+        });
+
+        (this.plugins || []).forEach(plugin => pipeline.pipe);
+
+        // lebab 转换
+        pipeline.pipe(({type, text}) => {
+            return {
+                type,
+                text: Transform.lebab(this.mode,
+                    render(
+                        (this.mode === 1) ? '' : depStr,
+                        text
+                    ), map, this.features)
+            }
+        });
+
+        // 最终, 格式化
+        pipeline.pipe(({text}) => {
+            return jsBeatify(text);
+        });
+
+        return pipeline.getResult();
     }
 
     /**
@@ -88,6 +106,7 @@ export default class Transform {
             }
             // Remove item
             if (item === 'NULL') {
+
                 deps[i] = null;
                 args[i] = null;
             }
@@ -134,8 +153,9 @@ export default class Transform {
      * @param args
      * @returns {string}
      */
-    getVariable({d, n}, args, depSize) {
+    getVariable({d, n}, args) {
         const deps = d;
+        const depSize = deps.length;
         const parent = path.parse(n).dir;
         const importDeps = this.reduceDeps(deps, parent);
         const variable = 'var';
@@ -154,12 +174,12 @@ export default class Transform {
 
         // 传参数量比依赖多 -> 注入 p p f r
         if (args.length >= depSize) {
-            return argsMatchedDeps;
+            return argsMatchedDeps.join('\n');
         }
 
         // 需要 require
-        return [...argsMatchedDeps, ...importDeps.slice(argsMatchedDeps.length , depSize).map(item => {
-            return `"require(${item}")`
+        return [...argsMatchedDeps, ...importDeps.slice(argsMatchedDeps.length, depSize).map(item => {
+            return `require("${item}");`
         })].join('\n');
     }
 

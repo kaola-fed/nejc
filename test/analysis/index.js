@@ -164,4 +164,15 @@ describe('libs', function () {
 
         expect(res.d[0]).to.be.equal('regularjs/index.js');
     });
+
+
+    it('libs2', function () {
+
+        var analysis = new Analysis.default({
+            libs: ['mobileweb-helper']
+        });
+        analysis.file = './test.js';
+        var res = analysis.analysis(`define(['mobileweb-helper/extend/util'], function(){});`);
+        expect(res.d[0]).to.be.equal('mobileweb-helper/extend/util');
+    });
 });

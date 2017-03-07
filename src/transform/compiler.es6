@@ -1,64 +1,43 @@
-import HasReturnStatement from '../analysis/hasReturnStatement';
 import Pipeable from '../tookit/Pipeable';
+import wrapperFnToModule from './wrapperFnToModule';
+import {replaceWrapFunctionHead, hackCircleDependencies} from '../tookit/tookit';
 
-class Compiler {
-    constructor(input, ap, depStr) {
-        this.ap = ap;
-        this.result = input;
-        this.depStr = depStr;
-    }
 
-    compile(file) {
-        this.file = file;
-        const pipeable = new Pipeable(this.result);
+export default function compile({input, ap, depStr = '', file = ''}) {
+    const source = replaceWrapFunctionHead(input, matched => {
+        return 'function module_exports () {' + '\n' + (depStr || '');
+    });
 
-        pipeable.pipe(
-            this.reduceWrapFunction.bind(this)
-        ).pipe(
-            this.reduceReturnStatement.bind(this)
-        );
-        return pipeable;
-    }
+    const pipeable = new Pipeable(source);
 
-    reduceWrapFunction(result) {
-        return result.replace(
-            /^\s*function\s*\([^)]*\)\s*\{/, [
-                '/** NejC Transform Module Wrapper **/ function module_exports () {',
-                /**
-                 * Hack ES5 Inner Function Dependency
-                 */
-                this.depStr || ''
-            ].join('\n'));
-    }
-
-    reduceReturnStatement(result) {
-        if (this.ap) {
-            const hasReturnStatement = new HasReturnStatement(result).compile();
-            if (!hasReturnStatement) {
-                result = result.replace(/\}\s*$/g, '\t return ' + this.ap + '; \n}');
-            } else {
-
-            }
+    pipeable.pipe(function (source) {
+        return wrapperFnToModule(source);
+    }).pipe(({type, text = ''}) => {
+        // 无 Return ，且有 Auto Return 传参
+        if (type === 0 && ap) {
+            text = (text||'') + `module.exports = ${ap};`;
         }
-
-        /**
-         * Hack Windows Sep
-         * @type {*}
-         */
-        const file = this.file.replace(/\\/g, '//');
-
-        /**
-         * Hack NEJ Circle Dependencies
-         * @type {*}
-         */
-        if (~file.indexOf('base/element.js')
-            || ~file.indexOf('base/event.js')) {
-            result = result + '\n\nmodule.exports.__proto__ = module_exports.call(window);\n';
-        } else {
-            result = result + '\n\nmodule.exports = module_exports.call(window);\n';
+        return {
+            text,
+            type
         }
-        return result;
-    }
-}
+    }).pipe(({type, text}) => {
+        // Nothing
+        if (type === 1) {
 
-export default Compiler;
+        }
+        return {type, text};
+    }).pipe(({type, text}) => {
+        if (type === 2) {
+            text += 'module.exports = module_exports.apply(window);'
+        }
+        return {type, text};
+    }).pipe(({type, text}) => {
+        return {
+            type,
+            text: hackCircleDependencies(file, text)
+        };
+    });
+
+    return pipeable;
+};
