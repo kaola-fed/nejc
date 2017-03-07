@@ -5,19 +5,10 @@ var expect = require('chai').expect;
 var cwd = process.cwd();
 var path = require('path');
 
-var alias1 = [
+var alias = [
     {
         key: 'lib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/lib/nej/src/',
-    }, {
-        key: 'h5lib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/'
-    }, {
-        key: 'fedlib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/'
-    }, {
-        key: 'pro',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/',
+        value: path.join(__dirname, 'lib', 'demo'),
     }
 ];
 
@@ -25,11 +16,22 @@ var alias1 = [
 describe('依赖转换', function () {
     it('依赖转换', function () {
         var deps = new Transform({
-            alias: alias1
+            alias: alias
         }).reduceDeps([
-            '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/components/h5/helper/util.js'
-        ], '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/pages/h5/index.js');
-        expect(deps[0]).to.be.equal('h5lib/helper/util.js');
+            path.join(__dirname, 'util.js')
+        ], path.join(__dirname));
+        expect(deps[0]).to.be.equal('./util');
+    });
+
+    it('windows', function () {
+        var deps = new Transform(
+            { file: path.resolve('/index.js'),
+            alias:
+                [ { key: 'commonjs',
+                    value:  path.resolve('/node_modules/commonjs') } ],
+            mode: 2,
+            features: undefined }).reduceDeps([path.resolve('/node_modules/commonjs/base/element.js')], path.join('/src/hello'));
+        expect(deps[0]).to.be.equal('commonjs/base/element.js');
     });
 
      it('引入依赖都使用', function () {
@@ -46,7 +48,7 @@ describe('依赖转换', function () {
             ],
             n: '',
             f: `function (Regular, HTML2canvas, p) {
-    
+
             }`,
         });
 
@@ -68,7 +70,7 @@ describe('依赖转换', function () {
             ],
             n: '',
             f: `function (Regular) {
-    
+
             }`,
         });
         expect(/html2canvas/g.test(res)).to.be.equal(true)
@@ -135,7 +137,7 @@ describe('NULL', function () {
 describe('自动补齐 module.exports', function () {
     it('没有 module.exports ，要加 ', function () {
         var res = new Transform({
-            alias: alias1,
+            alias: alias,
             mode: 1,
             file: '/'
         }).transform({
@@ -148,7 +150,7 @@ describe('自动补齐 module.exports', function () {
 
     it('已有 module.exports ，不需要加', function () {
         var res = new Transform({
-            alias: alias1,
+            alias: alias,
             mode: 1,
             file: '/'
         }).transform({
@@ -197,4 +199,3 @@ describe('mergeArgs', function () {
         expect((res.args.length === 0) && (res.deps.length === 0)).to.be.equal(true);
     });
 });
-

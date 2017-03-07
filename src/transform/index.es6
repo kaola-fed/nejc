@@ -215,30 +215,37 @@ export default class Transform {
             };
         const _libs = (this.libs || []);
 
-        const returnDeps = deps.map((item) => {
+        const hackWindowsPath = (absPath) => {
+            return absPath.replace(/\\+/g, '/')
+                .split('/')
+                .filter(item => !!item)
+                .join('/');
+        };
+        const returnDeps = deps.map(item => {
             // libs内的不处理
             if (isInLibs(_libs, item)) {
                 return item;
             }
             const p = path
                 .relative(parent, item)
-                .replace(/\.js$/ig, '')
-                .replace(/\\/ig, '/');
+                .replace(/\.js$/g, '')
+                .replace(/\\+/g, '/'); // Hack Windows
 
+            // 相对路径
             if (!p.startsWith('..')) {
                 return p.startsWith('.') ? p : './' + p;
+            } else {
+                let {key, value} = this.alias.filter(alias => {
+                    return !!(~item.indexOf(alias.value));
+                })[0] || {};
+                if (key && value) {
+                    return hackWindowsPath(item.replace(value, key))
+                }
             }
-            let alias = this.alias.filter(alias => {
-                return !!(~item.indexOf(alias.value));
-            })[0];
 
-            if (alias && alias.key) {
-                return item
-                    .replace(alias.value, alias.key.replace(/\/$/, '') + '/')
-                    .replace(/^\//g, '');
-            }
-            return p;
+            return hackWindowsPath(p);
         });
+
 
         return [...returnDeps, _o, _o, _f, _r];
     }

@@ -8,16 +8,10 @@ var path = require('path');
 var alias = [
     {
         key: 'pro',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/',
+        value: '/javascript/',
     }, {
         key: 'lib',
-        value: path.join(__dirname,'test')+'/',
-    }, {
-        key: 'h5lib',
-        value: path.join(__dirname,'h5libdefine')+'/',
-    }, {
-        key: 'fedlib',
-        value: '/Users/june/Desktop/Projects/kaola-shop-front/src/main/webapp/src/javascript/kaola-fed-lib/'
+        value: __dirname
     }
 ];
 
@@ -37,18 +31,18 @@ describe('依赖路径分析', function () {
 
     it('lib变量+不定义', function () {
         var nejParser = new NEJParser({});
-        var res = nejParser.doParsePlugin('{lib}index.js');
+        var res = nejParser.doParsePlugin('{pro}index.js');
         var result = nejParser.doFormatURI(res[0], path.join(__dirname,'index2.js'), res[2]);
-        expect(result).to.be.equal(path.join(__dirname, 'lib', 'index.js'));
+        expect(result).to.be.equal(path.join(__dirname, 'pro', 'index.js'));
     });
 
     it('lib变量+定义', function () {
         var nejParser = new NEJParser({
             alias: alias
         });
-        var res = nejParser.doParsePlugin('{lib}index.js');
+        var res = nejParser.doParsePlugin('{pro}index.js');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
-        expect(result).to.be.equal(path.join(__dirname, 'test', 'index.js'));
+        expect(result).to.be.equal(path.resolve('/', 'javascript/index.js'));
     });
 
     it('platform变量+定义', function () {
@@ -69,10 +63,10 @@ describe('依赖路径分析', function () {
         var nejParser = new NEJParser({
             alias: alias
         });
-        var res = nejParser.doParsePlugin('h5lib/helper/util');
+        var res = nejParser.doParsePlugin('pro/helper/util');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal( path.join(__dirname,'h5libdefine','helper', 'util.js'));
+        expect(result).to.be.equal( path.resolve('/javascript','helper', 'util.js'));
     });
 
     it('变量2', function () {
@@ -82,7 +76,7 @@ describe('依赖路径分析', function () {
         var res = nejParser.doParsePlugin('base/klass');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal(path.join(__dirname,'test','base','klass.js'));
+        expect(result).to.be.equal(path.join(__dirname, 'base','klass.js'));
     });
 });
 
