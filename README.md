@@ -20,10 +20,12 @@ $ touch nejc.config.js # 创建 nejc.config.js
 
 ```javascript
 module.exports = {
-    'src': 'src/mobileweb-helper',
-    'dist': 'build/node_modules/mobileweb-helper',
+    'src': 'src/mobileweb-helper', // 输入文件夹 或 文件
+    'dist': 'build/node_modules/mobileweb-helper', // 输出文件夹
 	'ext': ['.js'],
-	'libs': [
+	'libs': [ 
+	    // 添加到 libs 下的包名，不会做路径转换；
+	    // 否则会识别成 nej "base/element" 的形式 
     	'mobileweb-helper',
         'mobileweb-ui',
         'mobileweb-mcss',
@@ -35,19 +37,29 @@ module.exports = {
         'html2canvas'
     ],
 
-    'replaceArgs': {
+    'replaceArgs': { 
+        // 由于 nej 模块加载规范是自己的风格
+        // 所以我们一般在使用时会用 placeholder 代替
+        // 这个操作是将 placeholder 替换成暴露到 windows 上的变量
     	'regularjs': 'Regular',
     	'hammerjs': 'Hammer',
         'html2canvas': 'html2canvas'
     },
+    
     'alias': {
+        // 输入别名 => 将匹配 key 的模块名替换成 value （value为物理路径）
         'lib': '/node_modules/nej/'
     },
+    
     'outputAlias': {
+        // 输出别名 => 将匹配 value 的路径别名成对应的 key
         'nej-commonjs': '/node_modules/nej/'
     },
+    
     'mode': 2,
+    
     'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var'],
+    
     'plugins': [
         function (source) {
             return source.replace(/\.\_\$bind/g, '.bind');
@@ -72,9 +84,9 @@ const gulp = require('gulp');
 const nejc = require('../index');
 const path = require('path');
 const config = {
-	/**
-	** Here is nejc.config.js
-	*/
+    /**
+     * Here is nejc.config.js
+     */
 }
 
 gulp.task('default', function () {
