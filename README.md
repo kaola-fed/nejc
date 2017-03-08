@@ -63,12 +63,10 @@ $ nejc
 ### 二、Gulp Plugin 式
 #### Step 1. 安装 NejC 到工程
 ```bash
-$ cd /path/to/projectmochacnpm i
+$ cd /path/to/project
 $ npm i --save nejc
 ```
-#### Step 2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
-
-#### Step 3. 配置 `gulpfile.js`
+#### Step 2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 配置 `gulpfile.js`
 ```javascript
 const gulp = require('gulp');
 const nejc = require('../index');
@@ -113,7 +111,11 @@ gulp.task('default', function () {
         .pipe(gulp.dest(config.dist));
 });
 ```
-
+#### Step 3. 执行 Gulp 并静默等待
+```bash
+$ cd /path/to/project
+$ gulp
+```
 
 ## 关于贡献代码
 1. 在 Issues 栏中新建一个 Issue
