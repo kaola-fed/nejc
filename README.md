@@ -72,36 +72,9 @@ const gulp = require('gulp');
 const nejc = require('../index');
 const path = require('path');
 const config = {
-    'ext': ['.js'],
-    'libs': [
-        'mobileweb-helper',
-        'mobileweb-ui',
-        'mobileweb-mcss',
-
-
-        'regularjs',
-        'iscroll',
-        'hammerjs',
-        'html2canvas'
-    ],
-    'replaceArgs': {
-        'regularjs': 'Regular',
-        'hammerjs': 'Hammer',
-        'html2canvas': 'html2canvas'
-    },
-    'alias': {
-        'lib': '/node_modules/nej/'
-    },
-    'outputAlias': {
-        'nej-commonjs': '/node_modules/nej/'
-    },
-    'mode': 2,
-    'features': ['arrow', 'for-of', 'for-each', 'arg-rest', 'arg-spread', 'obj-method', 'obj-shorthand', 'no-strict', 'exponent', 'multi-var'],
-    'plugins': [
-        function (source) {
-            return source.replace(/\.\_\$bind/g, '.bind');
-        }
-    ]
+	/**
+	** Here is nejc.config.js
+	*/
 }
 
 gulp.task('default', function () {
