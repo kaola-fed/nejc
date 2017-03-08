@@ -17,7 +17,8 @@ $ npm i --global nejc
 $ cd /path/to/project
 $ touch nejc.config.js # 创建 nejc.config.js
 ```
-```javascript 1.8
+
+```javascript
 module.exports = {
     'src': 'src/mobileweb-helper',
     'dist': 'build/node_modules/mobileweb-helper',
@@ -68,7 +69,7 @@ $ npm i --save nejc
 #### Step 2. 根据 [文档](./docs/start.md) 编写一个符合你需求的 nejc.config.js
 
 #### Step 3. 配置 `gulpfile.js`
-```javascript 1.8
+```javascript
 const gulp = require('gulp');
 const nejc = require('../index');
 const path = require('path');
