@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 'use strict';
+const path = require('path');
+const pkg = require('../package.json');
+const App = (process.env.NODE_ENV === 'development') ? require('../src/') : require('../dist/');
+const argFormat = require('./argFormat');
 
-var pkg = require('../package.json');
-var App = (process.env.NODE_ENV === 'development') ? require('../src/') : require('../dist/');
-var path = require('path');
-var argTest = require('./argTest');
-
-var argv = require('yargs')
+const argv = require('yargs')
     .usage('Usage: nejc [options]')
 
     .alias('c', 'config')
@@ -44,7 +43,7 @@ var argv = require('yargs')
     .example('nejc -s src -d dist -if ignore.js -ie .es6,.html')
     .argv;
 
-var src = argv.s,
+const src = argv.s,
     config = argv.c,
     dist = argv.d,
     ignoreFiles = argv.ignoreFiles.split(','),
@@ -52,8 +51,7 @@ var src = argv.s,
     ext = argv.ext.split(',');
 
 
-var configOption;
-
+let configOption;
 try {
     configOption = require(path.resolve(process.cwd(), config));
 } catch (e) {
@@ -63,10 +61,4 @@ try {
         ignoreFiles, ignoreExt
     }
 }
-var res = argTest(configOption);
-
-if (res) {
-    throw new Error(res.key + ' 字段，需要传入' + res.value);
-    return -1;
-}
-App(configOption);
+App(argFormat(configOption));
