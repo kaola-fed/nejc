@@ -1,6 +1,6 @@
 {
   "name": "nej-commonjs",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "NEJ-CommonJS, dest by nice (https://github.com/kaola-fed/nice)",
   "main": "define.js",
   "scripts": {
