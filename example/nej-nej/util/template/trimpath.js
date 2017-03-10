@@ -46,10 +46,7 @@
      */
     // init TrimPath
     if (typeof TrimPath==='undefined'){
-        var TrimPath = {};
-        window.trimPath = TrimPath;
-        if (typeof exports!=='undefined')
-            TrimPath = exports;
+        window.TrimPath = {};
     }
     // variable declaration
     var _tcache = {}, // jst string cache
