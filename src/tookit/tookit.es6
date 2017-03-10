@@ -27,7 +27,11 @@ export const hackCircleDependencies = (currentFile, text) => {
      */
     if (~file.indexOf('base/element.js')
         || ~file.indexOf('base/event.js')) {
-        return text.replace(/module\.exports/, '\n\n module.exports.__proto__');
+        return text.replace(/module\.exports.*$/, `\n\n for(var k in _p) {
+    if (_p.hasOwnProperty(k)) {
+        exports[k] = _p[k];
+    }
+}`);
     }
     return text;
 };

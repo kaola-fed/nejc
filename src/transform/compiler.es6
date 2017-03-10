@@ -24,7 +24,7 @@ export default function compile({input, ap, depStr = '', file = ''}) {
     }).pipe(({type, text}) => {
         // Nothing
         if (type === 1) {
-
+            text = (text||'') + `;`;
         }
         return {type, text};
     }).pipe(({type, text}) => {
