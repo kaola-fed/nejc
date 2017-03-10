@@ -1,7 +1,7 @@
 {
   "name": "nej-commonjs",
   "version": "0.2.3",
-  "description": "NEJ-CommonJS, dest by nice (https://github.com/kaola-fed/nice)",
+  "description": "NEJ-CommonJS, dest by NejC (https://github.com/kaola-fed/NejC)",
   "main": "define.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
