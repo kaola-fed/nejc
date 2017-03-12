@@ -228,12 +228,11 @@ export default class Transform {
             }
             const p = path
                 .relative(parent, item)
-                .replace(/\.js$/g, '')
-                .replace(/\\+/g, '/'); // Hack Windows
+                .replace(/\.js$/g, '');
 
             // 相对路径
             if (!p.startsWith('..')) {
-                return p.startsWith('.') ? p : './' + p;
+                return hackWindowsPath(p.startsWith('.') ? p : './' + p);
             } else {
                 let {key, value} = this.alias.filter(alias => {
                     return !!(~item.indexOf(alias.value));

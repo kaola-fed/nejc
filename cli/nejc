@@ -10,7 +10,7 @@ const argv = require('yargs')
 
     .alias('c', 'config')
     .describe('c', '配置文件')
-    .default('c', 'nejc.config.js')
+    .default('c', './nejc.config.js')
 
     .alias('s', 'src')
     .describe('s', 'source code')
@@ -55,10 +55,7 @@ let configOption;
 try {
     configOption = require(path.resolve(process.cwd(), config));
 } catch (e) {
-    console.log(e);
-    configOption = {
-        src, dist,
-        ignoreFiles, ignoreExt
-    }
+    console.error(`[E] nejc 配置文件未找到，请核检查路径 ${config}!`);
+    process.exit(-1);
 }
 App(argFormat(configOption));

@@ -2,7 +2,17 @@
  * Created by june on 2017/1/5.
  */
 const path = require('path');
-
+/**
+ *
+ * @param alias
+ * @returns {Variable|*}
+ * @example
+ *
+ * input:
+ *  '/node_modules/lib/'
+ * output:
+ *  '/node_modules/lib'
+ */
 function absAliasPaths(alias) {
     return Object.keys(alias).reduce( (prev, key) => {
         prev[key] = alias[key].split(path.sep)
