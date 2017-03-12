@@ -221,6 +221,7 @@ export default class Transform {
                 .filter(item => !!item)
                 .join('/');
         };
+
         const returnDeps = deps.map(item => {
             // libs内的不处理
             if (isInLibs(_libs, item)) {
@@ -232,18 +233,18 @@ export default class Transform {
 
             // 相对路径
             if (!p.startsWith('..')) {
-                return hackWindowsPath(p.startsWith('.') ? p : './' + p);
+                return p.startsWith('.') ? p : './' + p;
             } else {
                 let {key, value} = this.alias.filter(alias => {
                     return !!(~item.indexOf(alias.value));
                 })[0] || {};
                 if (key && value) {
-                    return hackWindowsPath(item.replace(value, key))
+                    return item.replace(value, key)
                 }
             }
 
-            return hackWindowsPath(p);
-        });
+            return p;
+        }).map(hackWindowsPath);
 
 
         return [...returnDeps, _o, _o, _f, _r];
