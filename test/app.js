@@ -7,13 +7,6 @@ const argFormat = require('../cli/argFormat');
 const expect = require('chai').expect;
 
 describe('App', function () {
-    it('mergeLibs', function () {
-        const res = App.mergeLibs({
-
-        }, ['regularjs']);
-        expect(res.regularjs).to.be.equal('/excludelibs/regularjs/');
-    });
-
     it('reduceAlias', function () {
         const res = App.reduceAlias({
             'regular': '/modules/regualar'

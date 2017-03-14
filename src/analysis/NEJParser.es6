@@ -128,18 +128,39 @@ const _doFormatURI = (function () {
          * @private
          */
         const _abs = path.resolve(path.parse(_base).dir, _uri2);
-        return _format(_abs);
+        return {
+            uri: _format(_abs),
+            alias: (function (matched) {
+                if (!matched || !matched[1] || __config[matched[1]]) {
+                    return undefined;
+                }
+                return matched[1];
+            }(new RegExp(_reg).exec(_uri)))
+        };
     };
 })();
 
+const _doReduceUriInfo = function (isPatch, deps) {
+    const _mergeList = [];
+    const _deps = deps.map(({uri, alias}) => {
+        if (/^\s*platform\s*$/.test(alias)) {
+            _mergeList.push(uri.replace(/\.[^.]*$/g, $1 => `.patch${$1}`));
+        }
+        return uri;
+    });
+
+    return (isPatch) ? _deps.concat(_mergeList): _deps;
+};
+
 class NEJParser {
-    constructor({alias = [], uri = '', libs = []}) {
+    constructor({alias = [], uri = '', libs = [], isPatch = false}) {
         this._config = {
             root: {}
         };
         this._setAlias(alias);
         this._setCurrentFile(uri);
         this._setLibs(libs);
+        this._setIsPatch(isPatch);
     }
 
     define(_uri, _deps, _callback) {
@@ -157,6 +178,10 @@ class NEJParser {
 
     _setLibs(libs) {
         this.libs = libs;
+    }
+
+    _setIsPatch(isPatch) {
+        this.isPatch = isPatch;
     }
 
     _setAlias(alias) {
@@ -182,15 +207,17 @@ class NEJParser {
         _callback = _args[2] || function () {
                 return !1
             };
+        const _d = _deps.map((dep) => {
+            // libs 里面 不处理
+            if (isInLibs(_libs, dep)) {
+                return dep;
+            }
+            const _arr = _doParsePlugin(dep);
+            return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
+        });
+
         this.result = {
-            n: _uri, d: _deps.map((dep) => {
-                // libs 里面 不处理
-                if (isInLibs(_libs, dep)) {
-                    return dep;
-                }
-                const _arr = _doParsePlugin(dep);
-                return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
-            }),
+            n: _uri, d: _doReduceUriInfo(this.isPatch, _d),
             f: _callback.toString(),
             sourceDeps: _deps
         };

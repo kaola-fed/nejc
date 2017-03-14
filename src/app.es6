@@ -5,43 +5,39 @@ import through2 from 'through2';
 import gulpUtil from 'gulp-util';
 import replaceExt from 'replace-ext';
 import path from 'path';
+import {isIgnore} from './tookit/tookit';
 
 const PluginError = gulpUtil.PluginError;
 
 class App {
     /**
-     *
-     * @param opt
-     *      @property alias
-     *      @property mode
-     *      @property ext
-     *      @property outputAlias
-     *      @property syntax
-     *      @property replaceArgs
+     * @param alias
+     * @param outputAlias
+     * @param libs
+     * @param replaceArgs
+     * @param plugins
+     * @param ignoreFiles
+     * @param ext
+     * @param isPatch
+     * @param mode
      */
-    constructor(opt) {
-        opt.alias = opt.alias || {};
-        opt.outputAlias = opt.outputAlias || {};
-        opt.libs = opt.libs || [];
-        opt.replaceArgs = opt.replaceArgs || {};
-        opt.plugins = opt.plugins || [];
-
+    constructor({
+        alias = {}, outputAlias = {}, libs = [],
+        replaceArgs = {},
+        plugins = [],
+        ignoreFiles = [], ext = ['.js'],
+        isPatch = false, mode = 1
+    }) {
         Object.assign(this, {
-            ext: ['.js']
-        }, opt);
-
-        this.alias = App.reduceAlias(opt.alias);
-        this.outputAlias = App.reduceAlias(opt.outputAlias);
+            alias: App.reduceAlias(alias),
+            outputAlias: App.reduceAlias(outputAlias),
+            libs, replaceArgs, plugins, ignoreFiles, ext,
+            isPatch, mode
+        });
 
         this.alias.sort((before, after) => {
             return before.value.length <= after.value.length
         });
-    }
-
-    static mergeLibs(alias, libs = []) {
-        return Object.assign(alias, libs.reduce((prev, item) => Object.assign(prev, {
-            [item]: `/excludelibs/${item}/`
-        }), {}));
     }
 
     static reduceAlias(map = {}) {
@@ -64,18 +60,17 @@ class App {
             const options = {
                 file:        file.path,
                 alias:       this.alias,
-                mode:        (typeof this.mode === 'undefined') ? 1 : this.mode,
+                mode:        this.mode,
                 replaceArgs: this.replaceArgs,
                 plugins:     this.plugins,
-                libs:        this.libs
+                libs:        this.libs,
+                isPatch:     this.isPatch
             };
+
             const sourceContent = file._contents.toString();
             const pathInfo = path.parse(file.path);
 
-            /**
-             * 测试代码直接复制
-             */
-            if (~file.path.indexOf('test')) {
+            if (isIgnore(file.path, this.ignoreFiles)) {
                 return cb(null, file);
             }
 
@@ -83,7 +78,7 @@ class App {
                 return cb(null, file);
             }
 
-            if (!~sourceContent.indexOf('define(')) {
+            if (!~sourceContent.indexOf('define')) {
                 return cb(null, file);
             }
 
@@ -98,6 +93,7 @@ class App {
                 if (-1 === map) {
                     return cb(null, file);
                 }
+
                 const content = new Transform(Object.assign(options, {
                     alias: (this.outputAlias || this.alias),
                     features: this.features

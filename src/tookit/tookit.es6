@@ -1,4 +1,14 @@
 import {js_beautify} from 'js-beautify';
+import gutil from 'gulp-util';
+import minimatch from 'minimatch';
+
+export const log = (...args) => {
+    gutil.log(gutil.colors.magenta(args[0]), args[1], args[2]);
+};
+
+export const warning = (...args) => {
+    log('Warning', args[0], args[1]);
+};
 
 export const replaceEmail = (result) => {
     return result.replace(/\@corp\.netease\.com/i, '')
@@ -12,7 +22,6 @@ export const isInLibs = (libs, item) => {
 export const replaceWrapFunctionHead = (result, str) => {
     return result.replace(/^\s*function[^(]*\([^)]*\)\s*\{/, str);
 };
-
 
 export const hackCircleDependencies = (currentFile, text) => {
     /**
@@ -45,4 +54,10 @@ ${fn}`
 
 export function jsBeatify(text) {
     return js_beautify(text, {indent_size: 4})
+}
+
+export function isIgnore (filePath, ignores) {
+    return ignores.some(function (item) {
+        return minimatch(filePath, item, { matchBase: true })
+    });
 }
