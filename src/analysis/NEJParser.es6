@@ -140,27 +140,35 @@ const _doFormatURI = (function () {
     };
 })();
 
-const _doReduceUriInfo = function (isPatch, deps) {
-    const _mergeList = [];
-    const _deps = deps.map(({uri, alias}) => {
+const _doReduceUriInfo = function (deps) {
+    const _patchList = [];
+    const _deps = deps.map(dep => {
+        const {uri, alias} = dep;
+
+        if (!uri) {
+            return dep;
+        }
+
         if (/^\s*platform\s*$/.test(alias)) {
-            _mergeList.push(uri.replace(/\.[^.]*$/g, $1 => `.patch${$1}`));
+            _patchList.push(uri.replace(/\.[^.]*$/g, $1 => `.patch${$1}`));
         }
         return uri;
     });
 
-    return (isPatch) ? _deps.concat(_mergeList): _deps;
+    return {
+        deps: _deps,
+        patchList: _patchList
+    }
 };
 
 class NEJParser {
-    constructor({alias = [], uri = '', libs = [], isPatch = false}) {
+    constructor({alias = [], uri = '', libs = []}) {
         this._config = {
             root: {}
         };
         this._setAlias(alias);
         this._setCurrentFile(uri);
         this._setLibs(libs);
-        this._setIsPatch(isPatch);
     }
 
     define(_uri, _deps, _callback) {
@@ -178,10 +186,6 @@ class NEJParser {
 
     _setLibs(libs) {
         this.libs = libs;
-    }
-
-    _setIsPatch(isPatch) {
-        this.isPatch = isPatch;
     }
 
     _setAlias(alias) {
@@ -215,11 +219,14 @@ class NEJParser {
             const _arr = _doParsePlugin(dep);
             return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
         });
+        const {deps, patchList} = _doReduceUriInfo(_d);
 
         this.result = {
-            n: _uri, d: _doReduceUriInfo(this.isPatch, _d),
-            f: _callback.toString(),
-            sourceDeps: _deps
+            n: _uri,
+            d: deps,
+            sourceDeps: _deps,
+            patchList: patchList,
+            f: _callback.toString()
         };
         return this.result;
     }

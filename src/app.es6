@@ -58,13 +58,13 @@ class App {
                 return cb(new PluginError('nejc', 'Streaming not supported'));
 
             const options = {
-                file:        file.path,
-                alias:       this.alias,
-                mode:        this.mode,
+                file: file.path,
+                alias: this.alias,
+                mode: this.mode,
                 replaceArgs: this.replaceArgs,
-                plugins:     this.plugins,
-                libs:        this.libs,
-                isPatch:     this.isPatch
+                plugins: this.plugins,
+                libs: this.libs,
+                isPatch: this.isPatch
             };
 
             const sourceContent = file._contents.toString();
