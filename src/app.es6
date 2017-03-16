@@ -5,7 +5,7 @@ import through2 from 'through2';
 import gulpUtil from 'gulp-util';
 import replaceExt from 'replace-ext';
 import path from 'path';
-import {isIgnore} from './tookit/tookit';
+import {isIgnore, log} from './tookit/tookit';
 
 const PluginError = gulpUtil.PluginError;
 
@@ -105,6 +105,7 @@ class App {
                 file.path = replaceExt(file.path, '.js');
 
                 cb(null, file);
+                log('Done', 'build', file.path);
             } catch (err) {
                 cb(new PluginError('nejc', err));
             }
@@ -113,3 +114,7 @@ class App {
 }
 
 export default App;
+process.on('uncaughtexception', (e)=>{
+    "use strict";
+    console.log(e)
+});

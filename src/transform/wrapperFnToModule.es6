@@ -3,9 +3,20 @@
  */
 import jscodeshift from 'jscodeshift';
 import Pipeable from '../tookit/Pipeable';
+import {warning} from '../tookit/tookit';
 
 export default function wrapperFnToModule(input) {
-    const ast = parse(input);
+    let ast;
+    try {
+        ast = parse(input);
+    } catch (e) {
+        warning('wrapperFnToModule', e);
+        return {
+            type: 0,
+            text: input
+        }
+    }
+
     const pipeline = new Pipeable({ast});
 
     pipeline.pipe(source => {

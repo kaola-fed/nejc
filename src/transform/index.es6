@@ -63,7 +63,12 @@ export default class Transform {
             file: this.file
         });
 
-        (this.plugins || []).forEach(plugin => pipeline.pipe);
+        (this.plugins || []).forEach(plugin => {
+            pipeline.pipe(text => plugin({
+                text,
+                deps: map.d
+            }))
+        });
 
         // lebab 转换
         pipeline.pipe(({type, text}) => {

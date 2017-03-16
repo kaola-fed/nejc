@@ -3,11 +3,11 @@ import gutil from 'gulp-util';
 import minimatch from 'minimatch';
 
 export const log = (...args) => {
-    gutil.log(gutil.colors.magenta(args[0]), args[1], args[2]);
+    gutil.log(gutil.colors.green(args[0]), args[1], args[2]);
 };
 
 export const warning = (...args) => {
-    log('Warning', args[0], args[1]);
+    gutil.log(gutil.colors.magenta('Warning'), args[0], args[1]);
 };
 
 export const replaceEmail = (result) => {
