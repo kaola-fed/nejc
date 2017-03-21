@@ -29,7 +29,7 @@ export default function compile({input, ap, depStr = '', file = ''}) {
         return {type, text};
     }).pipe(({type, text}) => {
         if (type === 2) {
-            text += 'module.exports = module_exports.apply(window);'
+            text += 'module.exports = module_exports.apply(this);'
         }
         return {type, text};
     }).pipe(({type, text}) => {

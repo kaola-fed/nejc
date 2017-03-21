@@ -21,7 +21,7 @@ export default class Transform {
         }
 
         map.d = map.d || [];
-
+        map.patchList = map.patchList || [];
         const sourceDeps = map.sourceDeps || [];
         const functionBody = map.f;
 
@@ -34,7 +34,8 @@ export default class Transform {
         const autoReturnArg = args[deps.length];
         const depStr = this.getVariable({
             d: deps,
-            n: map.n
+            n: map.n,
+            p: map.patchList
         }, args);
         /**
          * @mode 1 -- es5
@@ -62,7 +63,12 @@ export default class Transform {
             file: this.file
         });
 
-        (this.plugins || []).forEach(plugin => pipeline.pipe);
+        (this.plugins || []).forEach(plugin => {
+            pipeline.pipe(text => plugin({
+                text,
+                deps: map.d
+            }))
+        });
 
         // lebab 转换
         pipeline.pipe(({type, text}) => {
@@ -113,9 +119,7 @@ export default class Transform {
         });
 
         const deleteNull = (list) => {
-            return list.filter(item => {
-                return item !== null;
-            })
+            return list.filter(item => (item !== null))
         };
 
         return {
@@ -153,11 +157,20 @@ export default class Transform {
      * @param args
      * @returns {string}
      */
-    getVariable({d, n}, args) {
-        const deps = d;
-        const depSize = deps.length;
+    getVariable({d, n, p}, args) {
+        let deps = d;
+
         const parent = path.parse(n).dir;
-        const importDeps = this.reduceDeps(deps, parent);
+        const patchList = p;
+        const depSize = deps.length;
+
+        if (this.isPatch) {
+            deps = deps.concat(patchList);
+            args = args.slice(0, depSize).concat(patchList.map(item => 'NULL').concat(args.slice(depSize)));
+        }
+
+        let importDeps = this.reduceDeps(deps, parent);
+
         const variable = 'var';
 
         const replaceImportAplias = (item, idx) => ({
@@ -168,7 +181,10 @@ export default class Transform {
         });
 
         const getVariableDefine = item => {
-            return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
+            if (item.name !== 'NULL') {
+                return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
+            }
+            return `${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`
         };
         const argsMatchedDeps = args.map(replaceImportAplias).map(getVariableDefine);
 
@@ -177,10 +193,13 @@ export default class Transform {
             return argsMatchedDeps.join('\n');
         }
 
+        const appendDeps = importDeps.slice(argsMatchedDeps.length, depSize).map(item => `require("${item}");`);
         // 需要 require
-        return [...argsMatchedDeps, ...importDeps.slice(argsMatchedDeps.length, depSize).map(item => {
-            return `require("${item}");`
-        })].join('\n');
+        return [
+            ...argsMatchedDeps,
+            ...appendDeps,
+            '\n'
+        ].join('\n');
     }
 
     /**
@@ -213,8 +232,11 @@ export default class Transform {
             _f = function () {
                 return 'function(){return !1;}'
             };
-        const _libs = (this.libs || []);
+        return [...this.convertDepsUri(deps, parent), _o, _o, _f, _r];
+    }
 
+    convertDepsUri(deps, parent) {
+        const _libs = (this.libs || []);
         const hackWindowsPath = (absPath) => {
             return absPath.replace(/\\+/g, '/')
                 .split('/')
@@ -246,7 +268,6 @@ export default class Transform {
             return p;
         }).map(hackWindowsPath);
 
-
-        return [...returnDeps, _o, _o, _f, _r];
+        return returnDeps;
     }
 }

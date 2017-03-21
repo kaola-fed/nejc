@@ -85,6 +85,7 @@ describe('依赖转换', function () {
                 'html2canvas'
             ],
             n: '',
+            p: []
         }, ['Regular']);
         expect(/require\(\"\.\/html2canvas\"\)\;/g.test(res)).to.be.equal(true)
     })

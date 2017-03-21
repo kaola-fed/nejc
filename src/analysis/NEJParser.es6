@@ -128,9 +128,38 @@ const _doFormatURI = (function () {
          * @private
          */
         const _abs = path.resolve(path.parse(_base).dir, _uri2);
-        return _format(_abs);
+        return {
+            uri: _format(_abs),
+            alias: (function (matched) {
+                if (!matched || !matched[1] || __config[matched[1]]) {
+                    return undefined;
+                }
+                return matched[1];
+            }(new RegExp(_reg).exec(_uri)))
+        };
     };
 })();
+
+const _doReduceUriInfo = function (deps) {
+    const _patchList = [];
+    const _deps = deps.map(dep => {
+        const {uri, alias} = dep;
+
+        if (!uri) {
+            return dep;
+        }
+
+        if (/^\s*platform\s*$/.test(alias)) {
+            _patchList.push(uri.replace(/\.[^.]*$/g, $1 => `.patch${$1}`));
+        }
+        return uri;
+    });
+
+    return {
+        deps: _deps,
+        patchList: _patchList
+    }
+};
 
 class NEJParser {
     constructor({alias = [], uri = '', libs = []}) {
@@ -182,17 +211,22 @@ class NEJParser {
         _callback = _args[2] || function () {
                 return !1
             };
+        const _d = _deps.map((dep) => {
+            // libs 里面 不处理
+            if (isInLibs(_libs, dep)) {
+                return dep;
+            }
+            const _arr = _doParsePlugin(dep);
+            return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
+        });
+        const {deps, patchList} = _doReduceUriInfo(_d);
+
         this.result = {
-            n: _uri, d: _deps.map((dep) => {
-                // libs 里面 不处理
-                if (isInLibs(_libs, dep)) {
-                    return dep;
-                }
-                const _arr = _doParsePlugin(dep);
-                return this.doFormatURI.call(this, _arr[0], _uri, _arr[2]);
-            }),
-            f: _callback.toString(),
-            sourceDeps: _deps
+            n: _uri,
+            d: deps,
+            sourceDeps: _deps,
+            patchList: patchList,
+            f: _callback.toString()
         };
         return this.result;
     }

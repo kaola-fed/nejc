@@ -19,21 +19,21 @@ describe('依赖路径分析', function () {
 
     it('相对路径', function () {
         var res = new NEJParser({}).doFormatURI('./index.js', filename);
-        expect(res).to.be.equal(path.join(cwd, 'index.js'));
+        expect(res.uri).to.be.equal(path.join(cwd, 'index.js'));
     });
 
     it('绝对路径', function () {
         var nejParser = new NEJParser({});
         var res = nejParser.doParsePlugin('./index.js');
         var result = nejParser.doFormatURI(res[0], path.join(__dirname,'index2.js'), res[2]);
-        expect(result).to.be.equal(path.join(__dirname,'index.js'));
+        expect(result.uri).to.be.equal(path.join(__dirname,'index.js'));
     });
 
     it('lib变量+不定义', function () {
         var nejParser = new NEJParser({});
         var res = nejParser.doParsePlugin('{pro}index.js');
         var result = nejParser.doFormatURI(res[0], path.join(__dirname,'index2.js'), res[2]);
-        expect(result).to.be.equal(path.join(__dirname, 'pro', 'index.js'));
+        expect(result.uri).to.be.equal(path.join(__dirname, 'pro', 'index.js'));
     });
 
     it('lib变量+定义', function () {
@@ -42,7 +42,7 @@ describe('依赖路径分析', function () {
         });
         var res = nejParser.doParsePlugin('{pro}index.js');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
-        expect(result).to.be.equal(path.resolve('/', 'javascript/index.js'));
+        expect(result.uri).to.be.equal(path.resolve('/', 'javascript/index.js'));
     });
 
     it('platform变量+定义', function () {
@@ -56,7 +56,7 @@ describe('依赖路径分析', function () {
         });
         var res = nejParser.doParsePlugin('{platform}config.js');
         var result = nejParser.doFormatURI(res[0], path.join(cwd, 'index.js'), res[2]);
-        expect(result).to.be.equal(path.join(cwd, 'platform', 'config.js'));
+        expect(result.uri).to.be.equal(path.join(cwd, 'platform', 'config.js'));
     });
 
     it('变量', function () {
@@ -66,7 +66,7 @@ describe('依赖路径分析', function () {
         var res = nejParser.doParsePlugin('pro/helper/util');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal( path.resolve('/javascript','helper', 'util.js'));
+        expect(result.uri).to.be.equal( path.resolve('/javascript','helper', 'util.js'));
     });
 
     it('变量2', function () {
@@ -76,7 +76,7 @@ describe('依赖路径分析', function () {
         var res = nejParser.doParsePlugin('base/klass');
         var result = nejParser.doFormatURI(res[0], '', res[2]);
 
-        expect(result).to.be.equal(path.join(__dirname, 'base','klass.js'));
+        expect(result.uri).to.be.equal(path.join(__dirname, 'base','klass.js'));
     });
 });
 
@@ -155,7 +155,6 @@ describe('libs', function () {
         });
         analysis.file = './test.js';
         var res = analysis.analysis(`define(['regularjs/index.js'], function(){});`);
-
         expect(res.d[0]).to.be.equal('regularjs/index.js');
     });
 

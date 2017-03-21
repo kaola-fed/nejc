@@ -1,4 +1,5 @@
 import NEJParser from './NEJParser';
+import {warning} from '../tookit/tookit';
 
 export default class Analysis {
     constructor(opt) {
@@ -10,19 +11,22 @@ export default class Analysis {
             compiler;
 
         try {
-
             compiler = Analysis.createCompileFunction(source);
 
         } catch (err) {
-            console.log(`[Warning] 生成编译函数失败，输出源码: ${this.file} `);
+            warning(this.file, err);
             return -1;
         }
 
         try {
-            map = compiler(NEJParser, this.alias, this.file, this.libs);
-
+            map = compiler(NEJParser, {
+                alias: this.alias,
+                uri: this.file,
+                libs: this.libs,
+                isPatch: this.isPatch
+            });
         } catch (err) {
-            console.log(`[Warning] 解析失败，输出源码: ${this.file} `);
+            warning(this.file, err);
             return -1;
         }
 
@@ -30,8 +34,8 @@ export default class Analysis {
     }
 
     static createCompileFunction(source) {
-        const fnStr =  `
-            var NEJ = new NEJParser({alias: alias, uri: currentFile, libs: libs});
+        const fnStr = `
+            var NEJ = new NEJParser(options);
             var define = NEJ.define.bind(NEJ);
             /**
              * define start
@@ -42,6 +46,6 @@ export default class Analysis {
              */
             return NEJ.getResult();
         `;
-        return new Function('NEJParser', 'alias', 'currentFile', 'libs', fnStr);
+        return new Function('NEJParser', 'options', fnStr);
     }
 };
