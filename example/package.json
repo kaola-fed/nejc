@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "babylon": "^6.14.1",
-    "replace-ext": "^1.0.0"
-  }
-}
