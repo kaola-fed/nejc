@@ -3,8 +3,8 @@
 const path = require('path');
 const pkg = require('../package.json');
 const App = (process.env.NODE_ENV === 'development') ? require('../src/') : require('../dist/');
-const argFormat = require('./argFormat');
 
+const gutil  = require('gulp-util');
 const argv = require('yargs')
     .usage('Usage: nejc [options]')
 
@@ -55,7 +55,8 @@ let configOption;
 try {
     configOption = require(path.resolve(process.cwd(), config));
 } catch (e) {
-    console.error(`[E] nejc 配置文件未找到，请核检查路径 ${config}!`);
-    process.exit(-1);
+    gutil.log(gutil.colors.magenta('warning'),'init', 'config file not found');
+    process.exit(1);
 }
-App(argFormat(configOption));
+
+App();

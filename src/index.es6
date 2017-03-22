@@ -5,9 +5,15 @@
 import gulp from 'gulp';
 import App from './app';
 import fs from 'fs';
-
+import {argTester, } from './tookit/tookit';
 
 module.exports = (opt) => {
+
+    let res;
+    if (!(res = argTester(opt))) {
+        warning('init', res);
+        process.exit(1);
+    }
 
     const app = new App(Object.assign({
         alias:{}
