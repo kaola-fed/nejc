@@ -255,13 +255,14 @@ export default class Transform {
 
             // 相对路径
             if (!p.startsWith('..')) {
-                return p.startsWith('.') ? p : './' + p;
+                return './' + p;
             } else {
                 let {key, value} = this.alias.filter(alias => {
                     return !!(~item.indexOf(alias.value));
                 })[0] || {};
                 if (key && value) {
-                    return item.replace(value, key)
+                    const returnValue = item.replace(value.replace(/[\\/]*$/g, ''), key);
+                    return returnValue
                 }
             }
 

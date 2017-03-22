@@ -6,9 +6,11 @@ require('../src/index')({
     'ignoreFiles': ['nes'],
     'ext': ['.js'],
     'alias': {
-        lib: path.resolve('./nej-nej'),
+        lib: path.join(__dirname, 'node_modules','a'),
     },
-    'outputAlias': {},
+    'outputAlias': {
+        nej2: path.join(__dirname, 'node_modules','a'),
+    },
     'mode': 1,
     'isPatch': true
 });

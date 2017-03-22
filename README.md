@@ -19,6 +19,7 @@ $ touch nejc.config.js # 创建 nejc.config.js
 ```
 
 ```javascript
+const path = require('path')
 module.exports = {
     'src': 'src/mobileweb-helper', // 输入文件夹 或 文件
     'dist': 'build/node_modules/mobileweb-helper', // 输出文件夹
@@ -48,12 +49,12 @@ module.exports = {
     
     'alias': {
         // 输入别名 => 将匹配 key 的模块名替换成 value （value为物理路径）
-        'lib': '/node_modules/nej/'
+        'lib': path.join(__dirname, 'nej')
     },
     
     'outputAlias': {
         // 输出别名 => 将匹配 value 的路径别名成对应的 key
-        'nej-commonjs': '/node_modules/nej/'
+        'nej-commonjs': path.join(__dirname, 'nej')
     },
     
     'mode': 2,
