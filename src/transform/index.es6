@@ -112,7 +112,6 @@ export default class Transform {
             }
             // Remove item
             if (item === 'NULL') {
-
                 deps[i] = null;
                 args[i] = null;
             }
@@ -166,7 +165,10 @@ export default class Transform {
 
         if (this.isPatch) {
             deps = deps.concat(patchList);
-            args = args.slice(0, depSize).concat(patchList.map(item => 'NULL').concat(args.slice(depSize)));
+            // args = args.slice(0, depSize).concat(patchList.map(item => 'NULL').concat(args.slice(depSize)));
+            args = args.slice(0, depSize)
+                    .concat(patchList.map(item => 'PLATFORM')
+                    .concat(args.slice(depSize)));
         }
 
         let importDeps = this.reduceDeps(deps, parent);
@@ -181,10 +183,15 @@ export default class Transform {
         });
 
         const getVariableDefine = item => {
-            if (item.name !== 'NULL') {
-                return `${variable} ${item.name} = ${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
+            const requestStatement = `${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`;
+
+            if (item.name === 'PLATFORM') {
+                return `if (WITHPATCH) {
+                    ${requestStatement}
+                };`;
             }
-            return `${( typeof item.uri === 'string' ) ? "require('" + item.uri + "')" : item.uri()};`
+            
+            return `${variable} ${item.name} = ${requestStatement};`;
         };
         const argsMatchedDeps = args.map(replaceImportAplias).map(getVariableDefine);
 
