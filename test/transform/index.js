@@ -1,6 +1,6 @@
 require('./Pipe');
 
-var Transform = require('../../src/transform').default;
+var Transform = require('../../lib/transform');
 var expect = require('chai').expect;
 var cwd = process.cwd();
 var path = require('path');
@@ -30,7 +30,7 @@ describe('依赖转换', function () {
                 [ { key: 'commonjs',
                     value:  path.resolve('/node_modules/commonjs') } ],
             mode: 2,
-            features: undefined }).reduceDeps([path.resolve('/node_modules/commonjs/base/element.js')], path.join('/src/hello'));
+            features: undefined }).reduceDeps([path.resolve('/node_modules/commonjs/base/element.js')], path.join('/lib/hello'));
         expect(deps[0]).to.be.equal('commonjs/base/element.js');
     });
 

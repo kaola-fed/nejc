@@ -1,4 +1,4 @@
-var wrapperFnToModule = require('../../src/transform/wrapperFnToModule').default;
+var wrapperFnToModule = require('../../lib/transform/wrapperFnToModule');
 var expect = require('chai').expect;
 var path = require('path');
 

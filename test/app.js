@@ -1,7 +1,7 @@
 /**
  * Created by june on 2017/3/6.
  */
-const App = require('../src/app').default;
+const App = require('../lib/app');
 const path = require('path');
 const expect = require('chai').expect;
 

@@ -1,7 +1,7 @@
 /**
  * Created by june on 2017/3/2.
  */
-var Pipeable = require('../../src/tookit/Pipeable').default;
+var Pipeable = require('../../lib/tookit/Pipeable');
 var expect = require('chai').expect;
 var cwd = process.cwd();
 var path = require('path');

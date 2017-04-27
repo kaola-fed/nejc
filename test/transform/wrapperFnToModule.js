@@ -1,5 +1,5 @@
-var wrapperFnToModule = require('../../src/transform/wrapperFnToModule').default;
-var Transform = require('../../src/transform').default;
+var wrapperFnToModule = require('../../lib/transform/wrapperFnToModule');
+var Transform = require('../../lib/transform');
 
 var res = new Transform({
     file: ''

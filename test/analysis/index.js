@@ -1,5 +1,5 @@
-var NEJParser = require('../../src/analysis/NEJParser').default;
-var Analysis = require('../../src/analysis');
+var NEJParser = require('../../lib/analysis/NEJParser');
+var Analysis = require('../../lib/analysis');
 var expect = require('chai').expect;
 var filename = __filename;
 var cwd = __dirname;
@@ -137,7 +137,7 @@ describe('插件分析', function () {
 
 describe('demo', function () {
     it('demo1', function () {
-        var analysis = new Analysis.default({
+        var analysis = new Analysis({
             alias: []
         });
         analysis.file = './test.js';
@@ -150,7 +150,7 @@ describe('demo', function () {
 
 describe('libs', function () {
     it('libs', function () {
-        var analysis = new Analysis.default({
+        var analysis = new Analysis({
             libs: ['regularjs']
         });
         analysis.file = './test.js';
@@ -161,7 +161,7 @@ describe('libs', function () {
 
     it('libs2', function () {
 
-        var analysis = new Analysis.default({
+        var analysis = new Analysis({
             libs: ['mobileweb-helper']
         });
         analysis.file = './test.js';
