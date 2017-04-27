@@ -1,4 +1,4 @@
-const Analysis = require('../lib/analysis');
+const Analysis = require('nejc/lib/analysis');
 const analysis = new Analysis({
     file: './test.js'
 })
