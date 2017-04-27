@@ -1,16 +1,14 @@
 
 ## [配置与启动](./start.md)
 
-## 词汇表
+## 原理简介
+### 词汇表
 * currentFile - 当前文件
 * sourceDeps - 文件处理前的依赖
 * dependencies - 处理后的依赖，每一项都为绝对路径
 * patchList - 平台兼容包的列表，绝对路径
 * fnStr - define 内方法体序列化后的结果
 * 额外参数 - nej 中会自动往 define 内方法体追加额外参数
-
-
-## 原理简介
 
 nejc 对 nej 组织方式的代码（以下称为源码）做下面两件事情：
 
