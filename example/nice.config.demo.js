@@ -1,10 +1,11 @@
 var path = require('path');
 
-require('../src/index')({
+require('../lib/index')({
     'src': './demo/index.js',
     'dist': 'dist',
     'ignoreFiles': ['nes'],
     'ext': ['.js'],
+    'libs': ['pro'],
     'alias': {
         lib: path.join(__dirname, 'node_modules','a'),
     },

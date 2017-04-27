@@ -2,7 +2,7 @@
 'use strict';
 const path = require('path');
 const pkg = require('../package.json');
-const App = (process.env.NODE_ENV === 'development') ? require('../src/') : require('../dist/');
+const App = require('../lib/');
 
 const gutil  = require('gulp-util');
 const argv = require('yargs')
@@ -55,6 +55,7 @@ let configOption;
 try {
     configOption = require(path.resolve(process.cwd(), config));
 } catch (e) {
+    console.log(e)
     gutil.log(gutil.colors.magenta('warning'),'init', 'config file not found');
     process.exit(1);
 }
