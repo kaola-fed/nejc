@@ -1,5 +1,5 @@
 
-## [如何创建一个符合你需求的 nejc.Config.js](./start.md)
+## [配置与启动](./start.md)
 
 ## 词汇表
 * currentFile - 当前文件
